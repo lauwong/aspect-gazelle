@@ -227,7 +227,9 @@ func (*declareTargetActionsImpl) AttrNames() []string {
 	return []string{"add", "remove"}
 }
 
-var declareTargetAdd = starlark.NewBuiltin("add", func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+var declareTargetAdd = starlark.NewBuiltin("add", addTarget)
+
+func addTarget(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var starName starlark.String
 	var starKind starlark.String
 	var starAttrs starlark.Mapping
@@ -266,8 +268,11 @@ var declareTargetAdd = starlark.NewBuiltin("add", func(thread *starlark.Thread, 
 	})
 
 	return starlark.None, nil
-})
-var declareTargetRemove = starlark.NewBuiltin("remove", func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+}
+
+var declareTargetRemove = starlark.NewBuiltin("remove", removeTarget)
+
+func removeTarget(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var name, kind starlark.String
 	if err := starlark.UnpackArgs(fn.Name(), args, kwargs, "name", &name, "kind??", &kind); err != nil {
 		return nil, err
@@ -276,7 +281,7 @@ var declareTargetRemove = starlark.NewBuiltin("remove", func(thread *starlark.Th
 	ai := fn.Receiver().(*declareTargetActionsImpl)
 	ai.Remove(name.GoString(), kind.GoString())
 	return starlark.None, nil
-})
+}
 
 // ---------------- TargetSource
 
@@ -475,7 +480,9 @@ func (a AnalyzeContext) String() string {
 func (a AnalyzeContext) Truth() starlark.Bool { return starlark.True }
 func (a AnalyzeContext) Type() string         { return "AnalyzeContext" }
 
-var contextAddSymbol = starlark.NewBuiltin("add_symbol", func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+var contextAddSymbol = starlark.NewBuiltin("add_symbol", addSymbol)
+
+func addSymbol(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var id, provider_type string
 	var label Label
 	err := starlark.UnpackArgs(
@@ -503,7 +510,7 @@ var contextAddSymbol = starlark.NewBuiltin("add_symbol", func(thread *starlark.T
 	}
 
 	return starlark.None, nil
-})
+}
 
 // ---------------- Gazelle Label
 
