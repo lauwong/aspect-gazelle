@@ -6,7 +6,8 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/alphadose/haxmap v1.4.0
 	github.com/bazel-contrib/rules_jvm v0.27.0
-	github.com/bazelbuild/bazel-gazelle v0.43.1-0.20250525205641-4dde518211a0 // NOTE: keep in sync with deps.bzl
+	github.com/bazel-contrib/rules_python/gazelle v0.0.0-20250526133658-b40d96aba36d // NOTE: keep in sync with python.MODULE.bazel
+	github.com/bazelbuild/bazel-gazelle v0.43.1-0.20250525205641-4dde518211a0 // NOTE: keep in sync with go.MODULE.bazel
 	github.com/bazelbuild/bazelisk v1.26.0 // NOTE: keep vendored code in sync
 	github.com/bazelbuild/buildtools v0.0.0-20250326091033-f79c8eafbddd
 	github.com/bazelbuild/rules_go v0.54.1 // NOTE: keep in sync with fetch.bzl
@@ -44,6 +45,7 @@ require (
 	go.starlark.net v0.0.0-20250318223901-d9371fef63fe
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	golang.org/x/sync v0.14.0
+	golang.org/x/tools v0.33.0
 	google.golang.org/genproto v0.0.0-20250115164207-1a7da9e5054f
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.6
@@ -53,15 +55,16 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.36.3
-	github.com/bazel-contrib/rules_python/gazelle v0.0.0-20250526133658-b40d96aba36d
 	github.com/charmbracelet/huh v0.6.0
 	github.com/creack/pty v1.1.24
+	github.com/google/slowjam v1.0.0
 	github.com/hay-kot/scaffold v0.6.2-0.20250317013600-8a6092d5e4ff
 	github.com/klauspost/compress v1.17.9
 	github.com/mikefarah/yq/v4 v4.45.1
 	github.com/reviewdog/reviewdog v0.17.4
 	github.com/sourcegraph/go-diff v0.7.0
 	golang.org/x/term v0.32.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422
 	gopkg.in/op/go-logging.v1 v1.0.0-20160211212156-b2cb9fa56473
 	gotest.tools/v3 v3.5.1
 )
@@ -157,7 +160,6 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
-	golang.org/x/tools v0.33.0 // indirect
 	golang.org/x/tools/go/vcs v0.1.0-deprecated // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
@@ -216,11 +218,10 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	google.golang.org/api v0.183.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250204164813-702378808489 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/klog/v2 v2.110.1 // indirect
+	k8s.io/klog/v2 v2.130.1 // indirect
 )
 
 replace github.com/gordonklaus/ineffassign => github.com/gordonklaus/ineffassign v0.1.0

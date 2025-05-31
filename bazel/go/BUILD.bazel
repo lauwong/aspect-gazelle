@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "nogo")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "nogo")
 
 nogo(
     name = "nogo",
@@ -45,5 +45,16 @@ nogo(
         # Enabling this requires upstream to resolve
         # https://github.com/bazelbuild/rules_go/issues/2396
         # "@org_golang_x_tools//go/analysis/passes/cgocall:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go",
+    srcs = ["tools.go"],
+    importpath = "github.com/aspect-build/silo/bazel/go",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_golang_google_genproto_googleapis_api//:api",
+        "@org_golang_x_tools//go/analysis",
     ],
 )
