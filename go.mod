@@ -54,6 +54,7 @@ require (
 )
 
 require (
+	github.com/EngFlow/gazelle_cc v0.1.0
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.36.3
 	github.com/charmbracelet/huh v0.6.0
 	github.com/creack/pty v1.1.24
