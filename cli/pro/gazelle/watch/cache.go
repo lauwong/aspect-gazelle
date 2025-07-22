@@ -23,7 +23,7 @@ func init() {
 type cacheState struct {
 	ClockSpec string
 	BuildId   string
-	Entries   map[string]any
+	Entries   map[string]map[string]any
 }
 
 type watchmanCache struct {
@@ -31,7 +31,7 @@ type watchmanCache struct {
 
 	file string
 
-	old           map[string]any
+	old           map[string]map[string]any
 	new           *sync.Map
 	lastClockSpec string
 }
@@ -56,7 +56,7 @@ func NewWatchmanCache(c *config.Config) cache.Cache {
 	wc := &watchmanCache{
 		w:    w,
 		file: diskCachePath,
-		old:  map[string]any{},
+		old:  map[string]map[string]any{},
 		new:  &sync.Map{},
 	}
 	wc.read()
@@ -108,15 +108,11 @@ func (c *watchmanCache) read() {
 
 	// Discard entries which have changed since the last cache write.
 	for _, p := range cs.Paths {
-		v.Entries[p] = nil
+		delete(v.Entries, p)
 	}
 
-	// Persist the still valid old entries and latest clock spec.
-	for k, v := range v.Entries {
-		if v != nil {
-			c.old[k] = v
-		}
-	}
+	// Persist the still valid entries as the "old" cache state
+	c.old = v.Entries
 	c.lastClockSpec = cs.ClockSpec
 
 	BazelLog.Infof("Watchman cache: %d entries at clock spec %s", len(c.old), c.lastClockSpec)
@@ -130,19 +126,16 @@ func (c *watchmanCache) write() {
 	}
 	defer cacheWriter.Close()
 
-	m := make(map[string]any)
+	m := make(map[string]map[string]any)
 
-	// Convert the sync.Map to a regular map for serialization.
+	// Convert the sync.Map[sync.Map] to a regular map for serialization.
 	c.new.Range(func(key, value interface{}) bool {
-		if m, isMap := value.(*sync.Map); isMap {
-			mValue := make(map[string]any)
-			m.Range(func(k, v interface{}) bool {
-				mValue[k.(string)] = v
-				return true
-			})
-			value = mValue
-		}
-		m[key.(string)] = value
+		mValue := make(map[string]any)
+		value.(*sync.Map).Range(func(k, v interface{}) bool {
+			mValue[k.(string)] = v
+			return true
+		})
+		m[key.(string)] = mValue
 		return true
 	})
 
@@ -163,30 +156,6 @@ func (c *watchmanCache) write() {
 	}
 }
 
-func (c *watchmanCache) Load(key string) (any, bool) {
-	// Already written to new cache.
-	if v, found := c.new.Load(key); found {
-		return v, true
-	}
-
-	// Exists in old cache and can transfer to new.
-	if v, ok := c.old[key]; ok {
-		v, _ = c.LoadOrStore(key, v)
-		return v, true
-	}
-
-	// Uncached
-	return nil, false
-}
-
-func (c *watchmanCache) Store(key string, value any) {
-	c.new.Store(key, value)
-}
-
-func (c *watchmanCache) LoadOrStore(key string, value any) (any, bool) {
-	return c.new.LoadOrStore(key, value)
-}
-
 func (c *watchmanCache) Persist() {
 	c.write()
 }
@@ -200,12 +169,12 @@ func (c *watchmanCache) LoadOrStoreFile(root, p, key string, loader cache.FileCo
 
 		// Potentially load the previously persisted map[]
 		if oldMap, hasOld := c.old[p]; hasOld {
-			for k, v := range oldMap.(map[string]any) {
+			for k, v := range oldMap {
 				newMap.Store(k, v)
 			}
 		}
 
-		fileMap, hasFileMap = c.LoadOrStore(p, newMap)
+		fileMap, hasFileMap = c.new.LoadOrStore(p, newMap)
 	}
 
 	// Load any cached result from the file specific sync.Map
