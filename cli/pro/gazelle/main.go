@@ -11,18 +11,22 @@ import (
 	"github.com/aspect-build/silo/cli/core/pkg/aspecterrors"
 	"github.com/aspect-build/silo/cli/core/pkg/ioutils"
 	host "github.com/aspect-build/silo/cli/pro/gazelle/host"
+	"github.com/aspect-build/silo/cli/pro/pkg/ibp"
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"gopkg.in/yaml.v3"
 )
 
+/**
+ * A `gazelle_binary`-like binary that runs gazelle following respecting the Aspect CLI config file.
+ *
+ * Supports additional features such as incremental builds via the Incremental Build Protocol.
+ */
 func main() {
 	// Convenience for local development: under `bazel run <binary target>` respect the
 	// users working directory, don't run in the execroot
 	if wd, exists := os.LookupEnv("BUILD_WORKING_DIRECTORY"); exists {
 		_ = os.Chdir(wd)
 	}
-
-	// TODO: add --watch
 
 	mode, languages, plugins, dirs := parseArgs()
 
@@ -42,11 +46,32 @@ func main() {
 
 	fmt.Printf("Mode: %s\n", mode)
 	fmt.Printf("Dirs: %v\n", dirs)
-	err := c.Generate(mode, []string{}, dirs)
 
-	// Handle command errors
-	if err != nil {
-		aspecterrors.HandleError(err)
+	if os.Getenv(ibp.PROTOCOL_SOCKET_ENV) != "" {
+		watch := ibp.NewClient(os.Getenv(ibp.PROTOCOL_SOCKET_ENV))
+
+		// TODO: established connection must be watching the source code, not the runfiles!
+
+		if err := watch.Connect(); err != nil {
+			fmt.Printf("Failed to connect to incremental build service: %v\n", err)
+			os.Exit(1)
+		}
+		defer watch.Disconnect()
+
+		fmt.Printf("Using incremental build service from %v\n", os.Getenv(ibp.PROTOCOL_SOCKET_ENV))
+
+		for cycle := range watch.AwaitCycle() {
+			fmt.Printf("Cycle %d: %v\n", cycle.CycleId, cycle.Sources)
+
+			c.Generate(mode, []string{}, dirs)
+		}
+	} else {
+		err := c.Generate(mode, []string{}, dirs)
+
+		// Handle command errors
+		if err != nil {
+			aspecterrors.HandleError(err)
+		}
 	}
 }
 

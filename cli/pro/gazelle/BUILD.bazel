@@ -12,6 +12,7 @@ go_library(
         "//cli/core/pkg/aspecterrors",
         "//cli/core/pkg/ioutils",
         "//cli/pro/gazelle/host",
+        "//cli/pro/pkg/ibp",
         "@bazel_gazelle//language:go_default_library",
         "@in_gopkg_yaml_v3//:yaml_v3",
     ],
