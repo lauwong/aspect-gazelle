@@ -18,7 +18,6 @@ go_library(
     deps = [
         "//cli/core/gazelle/common",
         "//cli/core/gazelle/common/cache",
-        "//cli/core/gazelle/common/git",
         "//cli/core/pkg/bazel/workspace",
         "//cli/core/pkg/logger",
         "//cli/pro/gazelle/host/plugin",
@@ -40,6 +39,10 @@ go_library(
 # Internal only for tests
 gazelle_binary(
     name = "gazelle_host_binary",
-    languages = [":host"],
+    testonly = True,
+    languages = [
+        ":host",
+        "//cli/core/gazelle/common/git/testing",
+    ],
     visibility = ["//cli/pro/gazelle:__subpackages__"],
 )

@@ -24,6 +24,7 @@ import (
 
 	cc "github.com/EngFlow/gazelle_cc/language/cc"
 	bzl "github.com/aspect-build/silo/cli/core/gazelle/bzl"
+	"github.com/aspect-build/silo/cli/core/gazelle/common/git"
 	"github.com/aspect-build/silo/cli/core/gazelle/common/progress"
 	js "github.com/aspect-build/silo/cli/core/gazelle/js"
 	kotlin "github.com/aspect-build/silo/cli/core/gazelle/kotlin"
@@ -73,6 +74,11 @@ const (
 	Print               = "update"
 	Diff                = "diff"
 )
+
+// Setup the 'configure' support for gitignore within Gazelle.
+func init() {
+	git.SetupGitIgnore()
+}
 
 func New(streams ioutils.Streams) *Configure {
 	c := &Configure{

@@ -18,6 +18,7 @@ go_library(
     deps = [
         "//cli/core/gazelle/bzl",
         "//cli/core/gazelle/common/cache",
+        "//cli/core/gazelle/common/git",
         "//cli/core/gazelle/common/progress",
         "//cli/core/gazelle/js",
         "//cli/core/gazelle/kotlin",

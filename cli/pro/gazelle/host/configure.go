@@ -5,17 +5,12 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/aspect-build/silo/cli/core/gazelle/common/git"
 	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
 	"github.com/aspect-build/silo/cli/pro/gazelle/host/plugin"
 	"github.com/bazelbuild/bazel-gazelle/config"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 	"golang.org/x/sync/errgroup"
 )
-
-func init() {
-	git.SetupGitIgnore()
-}
 
 var _ config.Configurer = (*GazelleHost)(nil)
 

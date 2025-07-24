@@ -19,7 +19,6 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//cli/core/gazelle/common",
-        "//cli/core/gazelle/common/git",
         "//cli/core/gazelle/kotlin/kotlinconfig",
         "//cli/core/gazelle/kotlin/parser",
         "//cli/core/pkg/logger",
@@ -43,7 +42,11 @@ go_library(
 # Internal only for tests
 gazelle_binary(
     name = "gazelle_kotlin_binary",
-    languages = [":kotlin"],
+    testonly = True,
+    languages = [
+        ":kotlin",
+        "//cli/core/gazelle/common/git/testing",
+    ],
     visibility = ["//visibility:private"],
 )
 

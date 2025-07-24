@@ -9,16 +9,11 @@ import (
 	"strings"
 
 	common "github.com/aspect-build/silo/cli/core/gazelle/common"
-	"github.com/aspect-build/silo/cli/core/gazelle/common/git"
 	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
 	"github.com/bazelbuild/bazel-gazelle/config"
 	"github.com/bazelbuild/bazel-gazelle/label"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 )
-
-func init() {
-	git.SetupGitIgnore()
-}
 
 // Configurer satisfies the config.Configurer interface. It's the
 // language-specific configuration extension.

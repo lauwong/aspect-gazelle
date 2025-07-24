@@ -4,7 +4,6 @@ import (
 	"flag"
 
 	common "github.com/aspect-build/silo/cli/core/gazelle/common"
-	"github.com/aspect-build/silo/cli/core/gazelle/common/git"
 	"github.com/aspect-build/silo/cli/core/gazelle/kotlin/kotlinconfig"
 	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
 	jvm_javaconfig "github.com/bazel-contrib/rules_jvm/java/gazelle/javaconfig"
@@ -13,10 +12,6 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/rule"
 	"github.com/rs/zerolog"
 )
-
-func init() {
-	git.SetupGitIgnore()
-}
 
 var _ config.Configurer = (*kotlinLang)(nil)
 
