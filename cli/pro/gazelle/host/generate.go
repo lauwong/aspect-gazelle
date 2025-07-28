@@ -45,13 +45,6 @@ func (host *GazelleHost) GenerateRules(args gazelleLanguage.GenerateArgs) gazell
 
 	queryCache := cache.Get(args.Config)
 
-	// TODO: normally would...
-	//   1. collect "source files"
-	//   2. generate rules for groups of "source rules"
-	// Now or maybe later...
-	//   3. parse "source files"
-	//   4. persist source file imports + symbols
-
 	// Stage 1:
 	// Collect source files indexed for multiple purposes such as:
 	//  - iterating over all source files per plugin
@@ -113,7 +106,7 @@ func (host *GazelleHost) GenerateRules(args gazelleLanguage.GenerateArgs) gazell
 		queryPrefix := fmt.Sprintf("%s|", pluginId)
 
 		// Collect the query results for this plugin's source files
-		targetSources := make(map[string]plugin.TargetSource)
+		targetSources := make(map[string]plugin.TargetSource, len(pluginSrcs))
 		for _, f := range pluginSrcs {
 			queryResults := make(plugin.QueryResults)
 			for queryId, results := range sourceFileQueryResults[f] {
@@ -260,7 +253,7 @@ type attributeValue struct {
 func convertPluginTargetDeclaration(args gazelleLanguage.GenerateArgs, pluginId plugin.PluginId, target plugin.TargetDeclaration) *gazelleRule.Rule {
 	targetRule := gazelleRule.NewRule(target.Kind, target.Name)
 
-	ruleAttrs := make(map[string]*attributeValue, 0)
+	ruleAttrs := make(map[string]*attributeValue, len(target.Attrs))
 
 	targetRule.SetPrivateAttr(targetPluginKey, pluginId)
 	targetRule.SetPrivateAttr(targetDeclarationKey, target)
@@ -392,7 +385,7 @@ func (host *GazelleHost) runSourceCodeQueries(queries plugin.NamedQueries, sourc
 	for queryType, queries := range queriesByType {
 		wg.Add(1)
 
-		go func() {
+		go func(queryType plugin.QueryType, queries plugin.NamedQueries) {
 			defer wg.Done()
 
 			if err := queryRunner.RunQueries(queryType, f, sourceCode, queries, queryResultsChan); err != nil {
@@ -400,7 +393,7 @@ func (host *GazelleHost) runSourceCodeQueries(queries plugin.NamedQueries, sourc
 				fmt.Printf("%s\n", msg)
 				BazelLog.Error(msg)
 			}
-		}()
+		}(queryType, queries)
 	}
 
 	go func() {
@@ -409,7 +402,7 @@ func (host *GazelleHost) runSourceCodeQueries(queries plugin.NamedQueries, sourc
 	}()
 
 	// Read the result channel and collect the results
-	queryResults := make(plugin.QueryResults)
+	queryResults := make(plugin.QueryResults, len(queries))
 	for result := range queryResultsChan {
 		queryResults[result.Key] = result.Result
 	}
@@ -419,9 +412,9 @@ func (host *GazelleHost) runSourceCodeQueries(queries plugin.NamedQueries, sourc
 
 // Collect source files managed by this BUILD and batch them by plugins interested in them.
 func (host *GazelleHost) collectSourceFilesByPlugin(cfg *BUILDConfig, args gazelleLanguage.GenerateArgs) (map[plugin.PluginId][]string, map[string][]plugin.PluginId, map[plugin.PluginId]map[string][]string) {
-	pluginSourceFiles := make(map[plugin.PluginId][]string)
+	pluginSourceFiles := make(map[plugin.PluginId][]string, len(cfg.pluginPrepareResults))
 	sourceFilePlugins := make(map[string][]plugin.PluginId)
-	pluginSourceGroupFiles := make(map[plugin.PluginId]map[string][]string)
+	pluginSourceGroupFiles := make(map[plugin.PluginId]map[string][]string, len(cfg.pluginPrepareResults))
 
 	// Collect source files managed by this BUILD for each plugin.
 	common.GazelleWalkDir(args, func(f string) error {

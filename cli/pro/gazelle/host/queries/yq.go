@@ -60,7 +60,7 @@ func runYamlQuery(node *yqlib.CandidateNode, query string) (interface{}, error) 
 func convertYqNodeToValue(node *yqlib.CandidateNode) interface{} {
 	switch node.Kind {
 	case yqlib.MappingNode:
-		m := make(map[string]interface{})
+		m := make(map[string]interface{}, len(node.Content)/2)
 		for i := 0; i < len(node.Content); i += 2 {
 			key := convertYqNodeToValue(node.Content[i])
 			value := convertYqNodeToValue(node.Content[i+1])
