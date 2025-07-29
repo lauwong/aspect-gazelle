@@ -12,7 +12,7 @@ import (
 	"github.com/aspect-build/silo/cli/core/buildinfo"
 	cache "github.com/aspect-build/silo/cli/core/gazelle/common/cache"
 	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
-	watcher "github.com/aspect-build/silo/cli/pro/pkg/watch"
+	watcher "github.com/aspect-build/silo/cli/core/pkg/watch"
 	"github.com/bazelbuild/bazel-gazelle/config"
 )
 

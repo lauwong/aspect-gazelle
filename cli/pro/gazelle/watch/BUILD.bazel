@@ -9,7 +9,7 @@ go_library(
         "//cli/core/buildinfo",
         "//cli/core/gazelle/common/cache",
         "//cli/core/pkg/logger",
-        "//cli/pro/pkg/watch",
+        "//cli/core/pkg/watch",
         "@bazel_gazelle//config:go_default_library",
     ],
 )

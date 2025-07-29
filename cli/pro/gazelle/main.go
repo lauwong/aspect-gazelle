@@ -9,9 +9,9 @@ import (
 	"github.com/aspect-build/silo/cli/core/buildinfo"
 	"github.com/aspect-build/silo/cli/core/pkg/aspect/configure"
 	"github.com/aspect-build/silo/cli/core/pkg/aspecterrors"
+	"github.com/aspect-build/silo/cli/core/pkg/ibp"
 	"github.com/aspect-build/silo/cli/core/pkg/ioutils"
 	host "github.com/aspect-build/silo/cli/pro/gazelle/host"
-	"github.com/aspect-build/silo/cli/pro/pkg/ibp"
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"gopkg.in/yaml.v3"
 )
