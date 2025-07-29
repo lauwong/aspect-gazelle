@@ -75,8 +75,6 @@ github.com/aymanbagabas/go-udiff v0.2.0 h1:TK0fH4MteXUDspT88n8CKzvK0X9O2xu9yQjWp
 github.com/aymanbagabas/go-udiff v0.2.0/go.mod h1:RE4Ex0qsGkTAJoQdQQCA0uG+nAzJO/pI/QwceO5fgrA=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
-github.com/bazel-contrib/rules_jvm v0.27.0 h1:Qkew39EgVTv+v0if0d8KZXcgazMx3mxg0LGwkcZ7Rd0=
-github.com/bazel-contrib/rules_jvm v0.27.0/go.mod h1:5biFsRs+vKr9mRcHMKfV770Oir5KVvj4ajJltB9+62Y=
 github.com/bazel-contrib/rules_python/gazelle v0.0.0-20250706032523-18d0d297aa69 h1:R5XuxQBf+wrQ/4yai/r94rZbbFXbrGhcmupbEzel9Z4=
 github.com/bazel-contrib/rules_python/gazelle v0.0.0-20250706032523-18d0d297aa69/go.mod h1:sn64a+UFQCzTy+yCBBnYZFMNENoQWkioKYQQoe0Zs9E=
 github.com/bazelbuild/bazel-gazelle v0.44.1-0.20250718191312-df6879377186 h1:M2KpwVXBgJLXoYwQ5tP5ESB3I2qLfvqJg8xfxBVOrTA=

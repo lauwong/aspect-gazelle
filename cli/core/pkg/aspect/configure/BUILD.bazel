@@ -21,7 +21,6 @@ go_library(
         "//cli/core/gazelle/common/git",
         "//cli/core/gazelle/common/progress",
         "//cli/core/gazelle/js",
-        "//cli/core/gazelle/kotlin",
         "//cli/core/gazelle/python",
         "//cli/core/pkg/aspect/configure/internal/wspace",
         "//cli/core/pkg/aspecterrors",
