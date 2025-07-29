@@ -1,4 +1,34 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_shell//shell:sh_library.bzl", "sh_library")
+
+go_library(
+    name = "configure_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/aspect-build/silo/cli/core/gazelle",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//cli/core/buildinfo",
+        "//cli/core/gazelle/host",
+        "//cli/core/pkg/aspect/configure",
+        "//cli/core/pkg/aspecterrors",
+        "//cli/core/pkg/ibp",
+        "//cli/core/pkg/ioutils",
+        "@bazel_gazelle//language:go_default_library",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+    ],
+)
+
+go_binary(
+    name = "bin",
+    embed = [":configure_lib"],
+    visibility = ["//visibility:public"],
+)
+
+sh_library(
+    name = "shell",
+    srcs = ["orion-init.sh"],
+)
 
 bzl_library(
     name = "gazelle",
