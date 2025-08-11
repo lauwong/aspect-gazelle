@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
+	BazelLog "github.com/aspect-build/silo/cli/core/gazelle/common/logger"
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"github.com/bazelbuild/bazel-gazelle/walk"
 )

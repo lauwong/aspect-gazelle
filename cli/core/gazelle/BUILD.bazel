@@ -9,11 +9,9 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//cli/core/buildinfo",
-        "//cli/core/gazelle/host",
-        "//cli/core/pkg/aspect/configure",
-        "//cli/core/pkg/aspecterrors",
+        "//cli/core/gazelle/languages/host",
+        "//cli/core/gazelle/runner",
         "//cli/core/pkg/ibp",
-        "//cli/core/pkg/ioutils",
         "@bazel_gazelle//language:go_default_library",
         "@in_gopkg_yaml_v3//:yaml_v3",
     ],

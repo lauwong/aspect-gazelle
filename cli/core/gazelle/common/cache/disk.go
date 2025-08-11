@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/aspect-build/silo/cli/core/buildinfo"
-	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
+	BazelLog "github.com/aspect-build/silo/cli/core/gazelle/common/logger"
 )
 
 /**

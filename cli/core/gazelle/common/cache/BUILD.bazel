@@ -13,7 +13,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//cli/core/buildinfo",
-        "//cli/core/pkg/logger",
+        "//cli/core/gazelle/common/logger",
         "//cli/core/pkg/watch",
         "@bazel_gazelle//config:go_default_library",
         "@bazel_gazelle//language:go_default_library",

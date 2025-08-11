@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	BazelLog "github.com/aspect-build/silo/cli/core/pkg/logger"
+	BazelLog "github.com/aspect-build/silo/cli/core/gazelle/common/logger"
 
 	sitter "github.com/smacker/go-tree-sitter"
 )
