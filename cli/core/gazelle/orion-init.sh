@@ -40,13 +40,8 @@ bazel_dep(name = "rules_shell", version = "0.4.0")
 include("//bazel/include:go.MODULE.bazel")
 include("//bazel/include:proto.MODULE.bazel")
 include("//bazel/include:python.MODULE.bazel")
+include("//cli/core/gazelle/common/treesitter/grammars:grammars.MODULE.bazel")
 EOMODULE
-
-# WORKSPACE file
-cat >WORKSPACE <<-EOWORKSPACE
-load("//cli/core/gazelle:deps.bzl", "fetch_deps")
-fetch_deps()
-EOWORKSPACE
 
 # None of the generated files should have changed existing files.
 if [[ $(git diff) ]]; then
