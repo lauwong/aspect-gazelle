@@ -3,11 +3,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "watch",
     srcs = ["watch.go"],
-    importpath = "github.com/aspect-build/silo/cli/core/pkg/watch",
+    importpath = "github.com/aspect-build/silo/cli/core/gazelle/common/watch",
     visibility = ["//visibility:public"],
     deps = [
-        "//cli/core/pkg/bazel",
-        "//cli/core/util/socket",
+        "//cli/core/gazelle/common/bazel",
+        "//cli/core/gazelle/common/socket",
     ],
 )
 

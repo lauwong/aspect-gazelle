@@ -13,10 +13,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aspect-build/silo/cli/core/gazelle/common/bazel/workspace"
 	BazelLog "github.com/aspect-build/silo/cli/core/gazelle/common/logger"
 	plugin "github.com/aspect-build/silo/cli/core/gazelle/languages/host/plugin"
 	starzelle "github.com/aspect-build/silo/cli/core/gazelle/languages/host/starzelle"
-	"github.com/aspect-build/silo/cli/core/pkg/bazel/workspace"
 	"github.com/bazelbuild/bazel-gazelle/config"
 	"github.com/bazelbuild/bazel-gazelle/label"
 	gazelleLanguage "github.com/bazelbuild/bazel-gazelle/language"

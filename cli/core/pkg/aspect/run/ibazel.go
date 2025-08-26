@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/aspect-build/silo/cli/core/pkg/ibp"
+	"github.com/aspect-build/silo/cli/core/gazelle/common/ibp"
 )
 
 var (

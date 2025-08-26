@@ -8,10 +8,10 @@ go_library(
     importpath = "github.com/aspect-build/silo/cli/core/gazelle",
     visibility = ["//visibility:private"],
     deps = [
-        "//cli/core/buildinfo",
+        "//cli/core/gazelle/common/buildinfo",
+        "//cli/core/gazelle/common/ibp",
         "//cli/core/gazelle/languages/host",
         "//cli/core/gazelle/runner",
-        "//cli/core/pkg/ibp",
         "@bazel_gazelle//language:go_default_library",
         "@in_gopkg_yaml_v3//:yaml_v3",
     ],

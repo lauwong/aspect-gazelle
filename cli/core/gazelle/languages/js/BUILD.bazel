@@ -59,7 +59,7 @@ gazelle_binary(
     languages = [
         "@bazel_gazelle//language/proto:go_default_library",
         ":js",
-        "//cli/core/gazelle/common/git/testing",
+        "//cli/core/gazelle/runner/git/testing",
     ],
     visibility = ["//visibility:private"],
 )

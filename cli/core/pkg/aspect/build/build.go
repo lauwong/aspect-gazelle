@@ -25,11 +25,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/aspect-build/silo/cli/core/gazelle/common/watch"
 	"github.com/aspect-build/silo/cli/core/pkg/aspect/root/flags"
 	"github.com/aspect-build/silo/cli/core/pkg/bazel"
 	"github.com/aspect-build/silo/cli/core/pkg/ioutils"
 	"github.com/aspect-build/silo/cli/core/pkg/plugin/system/bep"
-	"github.com/aspect-build/silo/cli/core/pkg/watch"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

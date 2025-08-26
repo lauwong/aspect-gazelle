@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/aspect-build/silo/cli/core/util/socket"
+	"github.com/aspect-build/silo/cli/core/gazelle/common/socket"
 )
 
 type IncrementalClient interface {
