@@ -13,14 +13,14 @@ use_repo(go_sdk, "go_sdk")
 bazel_dep(name = "gazelle", version = "0.45.0", repo_name = "bazel_gazelle")
 archive_override(
     module_name = "gazelle",
-    integrity = "sha256-9fxljMw1cBHcY4cX2Wm3OchB+yLaWNQs9jH6R0pxfi8=",
+    integrity = "sha256-3NCjXwfTFu/htS5BEzcn/uKXSdjKEZhrYdC+zykbcUE=",
     patch_strip = 1,
     patches = [
         "//cli/core/patches:bazelbuild_bazel-gazelle_aspect-cli.patch",
         "//cli/core/gazelle/runner/git:gazelle-gitignore.patch",
     ],
-    strip_prefix = "bazel-gazelle-efeeebf581083dd6bac6e4ebd1512265d8b13f3f",
-    urls = ["https://github.com/bazel-contrib/bazel-gazelle/archive/efeeebf581083dd6bac6e4ebd1512265d8b13f3f.tar.gz"],
+    strip_prefix = "bazel-gazelle-0e862c3d81827441407c1e7c421831af511acfdb",
+    urls = ["https://github.com/bazel-contrib/bazel-gazelle/archive/0e862c3d81827441407c1e7c421831af511acfdb.tar.gz"],
 )
 
 bazel_dep(name = "gazelle_cc", version = "0.1.0")
