@@ -10,7 +10,7 @@ go_library(
     deps = [
         "//cli/core/gazelle/common/buildinfo",
         "//cli/core/gazelle/common/ibp",
-        "//cli/core/gazelle/languages/host",
+        "//cli/core/gazelle/language/host",
         "//cli/core/gazelle/runner",
         "@bazel_gazelle//language:go_default_library",
         "@in_gopkg_yaml_v3//:yaml_v3",

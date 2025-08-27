@@ -9,7 +9,7 @@ import (
 
 	"github.com/aspect-build/silo/cli/core/gazelle/common/buildinfo"
 	"github.com/aspect-build/silo/cli/core/gazelle/common/ibp"
-	host "github.com/aspect-build/silo/cli/core/gazelle/languages/host"
+	host "github.com/aspect-build/silo/cli/core/gazelle/language/host"
 	"github.com/aspect-build/silo/cli/core/gazelle/runner"
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"gopkg.in/yaml.v3"
