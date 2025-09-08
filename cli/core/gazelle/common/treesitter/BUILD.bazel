@@ -17,6 +17,7 @@ go_library(
         "//cli/core/gazelle/common/treesitter/grammars/java",
         "//cli/core/gazelle/common/treesitter/grammars/json",
         "//cli/core/gazelle/common/treesitter/grammars/kotlin",
+        "//cli/core/gazelle/common/treesitter/grammars/rust",
         "//cli/core/gazelle/common/treesitter/grammars/starlark",
         "//cli/core/gazelle/common/treesitter/grammars/tsx",
         "//cli/core/gazelle/common/treesitter/grammars/typescript",
