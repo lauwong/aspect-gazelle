@@ -1,0 +1,3 @@
+# Test code with intentional syntax variations.
+language/js/tests/**/tsconfig.json
+language/js/tests/**/*.ts
