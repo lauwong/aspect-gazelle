@@ -1,6 +1,6 @@
 load("//:gazelle.bzl", "gazelle_generation_test")
 
-BUILTIN_PLUGINS_DIR = "plugins"
+BUILTIN_PLUGINS_DIR = "language/orion/plugins"
 
 # Disable the gazelle extensions
 # gazelle:exclude .
@@ -12,7 +12,7 @@ BZL_TESTS = [t.replace("/WORKSPACE", "") for t in glob(["bzl/*/WORKSPACE"])]
     gazelle_generation_test(
         name = "%s_test" % t.replace("bzl/", "bzl-"),
         data = [
-            "//plugins:bzl.lang.star",
+            "//%s:bzl.lang.star" % BUILTIN_PLUGINS_DIR,
         ],
         dir = t,
         env = {

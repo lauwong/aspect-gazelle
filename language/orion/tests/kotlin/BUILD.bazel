@@ -1,6 +1,6 @@
 load("//:gazelle.bzl", "gazelle_generation_test")
 
-BUILTIN_PLUGINS_DIR = "plugins"
+BUILTIN_PLUGINS_DIR = "language/orion/plugins"
 
 # Disable the gazelle extensions
 # gazelle:exclude .
@@ -11,8 +11,8 @@ KOTLIN_TESTS = [t.replace("/WORKSPACE", "") for t in glob(["*/WORKSPACE"])]
     gazelle_generation_test(
         name = "%s_test" % t,
         data = [
-            "//plugins:kotlin.lang.star",
-            "//plugins:maven.lang.star",
+            "//%s:kotlin.lang.star" % BUILTIN_PLUGINS_DIR,
+            "//%s:maven.lang.star" % BUILTIN_PLUGINS_DIR,
         ],
         dir = t,
         env = {
