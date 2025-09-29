@@ -50,3 +50,8 @@ gazelle(name = "gazelle", gazelle = "@multitool//tools/gazelle")
 4. Continue as normal from the [gazelle](https://github.com/bazelbuild/bazel-gazelle) setup docs.
 
 5. When you want to update to a new version, use [multitool](https://github.com/bazel-contrib/multitool): `multitool update tools.lock.json` to update the lockfile.
+
+## Developing
+
+To release, just press the button on
+https://github.com/aspect-build/aspect-gazelle/actions/workflows/release.yaml

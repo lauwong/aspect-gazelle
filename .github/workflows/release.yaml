@@ -65,3 +65,8 @@ jobs:
           files: assets/*
           generate_release_notes: true
           body_path: release_notes.txt
+          draft: true  # https://github.com/softprops/action-gh-release/issues/653
+      - name: Promote release to published
+        run: gh release edit ${{ needs.tag.outputs.tag }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
