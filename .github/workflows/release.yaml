@@ -55,7 +55,7 @@ jobs:
           If it's your initial install, use the following \`tools.lock.json\`:
 
           \`\`\`json
-          $(jq --arg tag "${{ needs.tag.outputs.tag }}" -Rs -f .github/workflows/filter.jq assets/CHECKSUMS)
+          $(jq --arg tag "${{ needs.tag.outputs.tag }}" -Rs -f $GITHUB_WORKSPACE/.github/workflows/filter.jq assets/CHECKSUMS)
           \`\`\`
           EOF
       - name: Generate artifact attestation
