@@ -55,11 +55,11 @@ type GazelleRunner struct {
 type GazelleLanguage = string
 
 const (
-	JavaScript GazelleLanguage = "javascript"
+	JavaScript GazelleLanguage = js.LanguageName
 	Orion                      = orion.GazelleLanguageName
 	Go                         = "go"
-	Protobuf                   = "protobuf"
-	Bzl                        = "bzl"
+	Protobuf                   = "proto"
+	Bzl                        = "starlark"
 	Python                     = "python"
 	CC                         = "cc"
 )
