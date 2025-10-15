@@ -2,7 +2,6 @@ package watchman
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -25,11 +24,11 @@ func getTempDir(t *testing.T) string {
 }
 
 func createWatchman(root string) *WatchmanWatcher {
-	w := WatchmanWatcher{root: root}
+	w := NewWatchman(root)
 	if runtime.GOOS == "darwin" {
 		w.watchmanPath = "/opt/homebrew/bin/watchman"
 	}
-	return &w
+	return w
 }
 
 func TestWatchStart(t *testing.T) {
@@ -75,14 +74,14 @@ func TestSubscribe(t *testing.T) {
 
 	changeset := make(chan ChangeSet)
 	go func() {
-		err = w.Subscribe(context.TODO(), func(cs ChangeSet) error {
+		for cs := range w.Subscribe(context.TODO(), "") {
 			t.Log(cs)
 			if len(cs.Paths) == 0 {
-				return nil
+				break
 			}
-			changeset <- cs
-			return fmt.Errorf("stop")
-		})
+			changeset <- *cs
+			break
+		}
 
 		if err != nil {
 			t.Errorf("Expected to subscribe: %s", err)

@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
@@ -22,4 +23,10 @@ go_test(
     srcs = ["watch_test.go"],
     embed = [":watchman"],
     tags = ["manual"],  # TODO: we need watchman in our runners.
+)
+
+# At least make sure watch tests can build despite being tagged as manual
+build_test(
+    name = "watchman_test_build_test",
+    targets = [":watchman_test"],
 )
