@@ -68,24 +68,29 @@ func NewLanguage(plugins ...string) gazelleLanguage.Language {
 	return l
 }
 
-func (h *GazelleHost) loadStarzellePlugins(configurePlugins []string) *GazelleHost {
+func (h *GazelleHost) loadStarzellePlugins(plugins []string) {
+	if len(plugins) == 0 {
+		return
+	}
+
 	wd, cwdErr := os.Getwd()
 	if cwdErr != nil {
 		BazelLog.Fatalf("Failed to find CWD: %v", cwdErr)
-		return nil
+		return
 	}
 
 	// Load starzelle plugins configured in the aspect-cli config.yaml
 	wr, wrErr := workspace.DefaultFinder.Find(wd)
 	if wrErr != nil {
 		BazelLog.Fatalf("Failed to find bazel workspace: %v", wrErr)
-		return nil
-	}
-	for _, plugin := range configurePlugins {
-		h.LoadPlugin(wr, plugin)
+		return
 	}
 
-	return h
+	BazelLog.Infof("Loading %v orion plugins from %q: %v", len(plugins), wd, plugins)
+
+	for _, plugin := range plugins {
+		h.LoadPlugin(wr, plugin)
+	}
 }
 
 func (h *GazelleHost) loadEnvStarzellePlugins() {
@@ -135,7 +140,7 @@ func (h *GazelleHost) loadEnvStarzellePlugins() {
 		}
 	}
 
-	BazelLog.Infof("Loading orion plugins from %q: %v", builtinPluginDir, builtinPlugins)
+	BazelLog.Infof("Loading %v orion env plugins from %q: %v", len(builtinPlugins), builtinPluginDir, builtinPlugins)
 
 	for _, p := range builtinPlugins {
 		h.LoadPlugin(builtinPluginDir, p)

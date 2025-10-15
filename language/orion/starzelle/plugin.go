@@ -29,7 +29,7 @@ type starzelleState struct {
 }
 
 func LoadProxy(host plugin.PluginHost, pluginDir, pluginPath string) error {
-	BazelLog.Infof("Load orion plugin %q", pluginPath)
+	BazelLog.Infof("Evaluate orion plugin: %q", pluginPath)
 
 	state := starzelleState{
 		pluginPath: pluginPath,
