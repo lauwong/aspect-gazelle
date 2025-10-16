@@ -1,8 +1,7 @@
 load("@aspect_gazelle//:gazelle.bzl", "gazelle_generation_test")
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
 
 # Disable the gazelle extensions
-# gazelle:exclude tests/**
+# gazelle:ignore
 
 [
     gazelle_generation_test(
@@ -14,21 +13,7 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
                 t,
             ),
         },
-        gazelle_binary = ":tests",
+        gazelle_binary = "//:gazelle_prebuilt_bin",
     )
     for t in [t.replace("/WORKSPACE", "") for t in glob(["*/WORKSPACE"])]
 ]
-
-go_library(
-    name = "tests_lib",
-    srcs = ["test.go"],
-    importpath = "github.com/aspect-build/aspect-gazelle/runner/tests",
-    visibility = ["//visibility:private"],
-    deps = ["//:runner"],
-)
-
-go_binary(
-    name = "tests",
-    embed = [":tests_lib"],
-    visibility = ["//visibility:public"],
-)

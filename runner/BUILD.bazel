@@ -37,6 +37,7 @@ gazelle_binary(
         "@gazelle//language/proto",
         "@gazelle//language/go",
     ],
+    visibility = ["//visibility:public"],
 )
 
 # Target name matching MODULE name
