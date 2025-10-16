@@ -2,6 +2,7 @@ load("@aspect_gazelle//:gazelle.bzl", "gazelle_generation_test")
 load("@gazelle//:def.bzl", "gazelle_binary")
 
 # gazelle:ignore
+# gazelle:generation_mode update_only
 
 # Internal only for tests
 gazelle_binary(

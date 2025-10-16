@@ -1,7 +1,7 @@
 load("@aspect_gazelle//:gazelle.bzl", "gazelle_generation_test")
 
-# Disable the gazelle extensions
 # gazelle:ignore
+# gazelle:generation_mode update_only
 
 [
     gazelle_generation_test(
