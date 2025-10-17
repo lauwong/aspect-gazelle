@@ -130,7 +130,7 @@ func (c *watchmanCache) read() {
 }
 
 func (c *watchmanCache) write() {
-	cacheWriter, err := os.OpenFile(c.file, os.O_RDWR|os.O_CREATE, 0666)
+	cacheWriter, err := os.OpenFile(c.file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		BazelLog.Errorf("Failed to create cache %q: %v", c.file, err)
 		return
