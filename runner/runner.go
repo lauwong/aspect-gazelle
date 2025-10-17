@@ -156,7 +156,7 @@ func (runner *GazelleRunner) PrepareGazelleArgs(mode GazelleMode, args []string)
 }
 
 // Instantiate an instance of each language enabled in this GazelleRunner instance.
-func (runner *GazelleRunner) InstantiateLanguages() []language.Language {
+func (runner *GazelleRunner) instantiateLanguages() []language.Language {
 	languages := make([]language.Language, 0, len(runner.languages)+1)
 
 	if os.Getenv("GAZELLE_PROGRESS") != "" && term.IsTerminal(int(os.Stdout.Fd())) {
@@ -169,7 +169,7 @@ func (runner *GazelleRunner) InstantiateLanguages() []language.Language {
 	return languages
 }
 
-func (runner *GazelleRunner) InstantiateConfigs() []config.Configurer {
+func (runner *GazelleRunner) instantiateConfigs() []config.Configurer {
 	configs := []config.Configurer{
 		cache.NewConfigurer(),
 	}
@@ -192,8 +192,8 @@ func (runner *GazelleRunner) Generate(mode GazelleMode, args []string) (bool, er
 	}
 
 	// Run gazelle
-	langs := runner.InstantiateLanguages()
-	configs := runner.InstantiateConfigs()
+	langs := runner.instantiateLanguages()
+	configs := runner.instantiateConfigs()
 	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, UpdateCmd, configs, langs, fixArgs)
 
 	if mode == Fix {
@@ -215,8 +215,8 @@ func (p *GazelleRunner) Watch(watchAddress string, mode GazelleMode, args []stri
 
 	// Initial run and status update to stdout.
 	fmt.Printf("Initialize BUILD file generation --watch in %v\n", wd)
-	languages := p.InstantiateLanguages()
-	configs := p.InstantiateConfigs()
+	languages := p.instantiateLanguages()
+	configs := p.instantiateConfigs()
 	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, UpdateCmd, configs, languages, fixArgs)
 	if err != nil {
 		return fmt.Errorf("failed to run gazelle fix/update: %w", err)
@@ -245,6 +245,8 @@ func (p *GazelleRunner) Watch(watchAddress string, mode GazelleMode, args []stri
 		fmt.Printf("Detected changes in %v\n", changedDirs)
 
 		// Run gazelle
+		languages := p.instantiateLanguages()
+		configs := p.instantiateConfigs()
 		visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, UpdateCmd, configs, languages, append(fixArgs, changedDirs...))
 		if err != nil {
 			return fmt.Errorf("failed to run gazelle fix/update: %w", err)
