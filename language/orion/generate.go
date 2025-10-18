@@ -18,6 +18,7 @@ import (
 	ruleUtils "github.com/aspect-build/aspect-gazelle/common/rule"
 	"github.com/aspect-build/aspect-gazelle/language/orion/plugin"
 	queryRunner "github.com/aspect-build/aspect-gazelle/language/orion/queries"
+	"github.com/bazelbuild/bazel-gazelle/config"
 	gazelleLabel "github.com/bazelbuild/bazel-gazelle/label"
 	gazelleLanguage "github.com/bazelbuild/bazel-gazelle/language"
 	gazelleRule "github.com/bazelbuild/bazel-gazelle/rule"
@@ -57,7 +58,7 @@ func (host *GazelleHost) generateRules(cfg *BUILDConfig, args gazelleLanguage.Ge
 	//  - iterating over all source files per plugin
 	//  - iterating over plugins per source file
 	//  - iterating over source files by plugin file group
-	pluginSourceFiles, sourceFilePlugins, pluginSourceGroupFiles := host.collectSourceFilesByPlugin(cfg, args)
+	pluginSourceFiles, sourceFilePlugins, pluginSourceGroupFiles := host.collectSourceFilesByPlugin(cfg, args.Config, args.RegularFiles)
 
 	// Run queries on source files and collect results
 	eg := errgroup.Group{}
@@ -255,11 +256,11 @@ func (host *GazelleHost) applyPluginAction(args gazelleLanguage.GenerateArgs, pl
 		}
 
 		// Generate the gazelle Rule to be added/merged into the BUILD file.
-		rule, attrs := convertPluginTargetDeclaration(args, pluginId, target)
+		rule, attrs := convertPluginTargetDeclaration(args.Rel, pluginId, target)
 
 		result.Gen = append(result.Gen, rule)
 		result.Imports = append(result.Imports, attrs)
-		result.RelsToIndex = append(result.RelsToIndex, targetAttributesToRelsToImport(args, attrs)...)
+		result.RelsToIndex = append(result.RelsToIndex, targetAttributesToRelsToImport(args.Rel, attrs)...)
 
 		BazelLog.Tracef("GenerateRules(%s) add target: %s %s(%q)", GazelleLanguageName, args.Rel, target.Kind, target.Name)
 	default:
@@ -273,7 +274,7 @@ type attributeValue struct {
 	imports   []plugin.TargetImport
 }
 
-func convertPluginTargetDeclaration(args gazelleLanguage.GenerateArgs, pluginId plugin.PluginId, target plugin.TargetDeclaration) (*gazelleRule.Rule, map[string]*attributeValue) {
+func convertPluginTargetDeclaration(pkg string, pluginId plugin.PluginId, target plugin.TargetDeclaration) (*gazelleRule.Rule, map[string]*attributeValue) {
 	targetRule := gazelleRule.NewRule(target.Kind, target.Name)
 
 	ruleAttrs := make(map[string]*attributeValue, len(target.Attrs))
@@ -283,7 +284,7 @@ func convertPluginTargetDeclaration(args gazelleLanguage.GenerateArgs, pluginId 
 	targetRule.SetPrivateAttr(targetAttrValues, ruleAttrs)
 
 	for attr, val := range target.Attrs {
-		attrValue, attrImports, isArray := convertPluginAttribute(args, val)
+		attrValue, attrImports, isArray := convertPluginAttribute(pkg, val)
 
 		// TODO: verify 'attr' is resolveable if len(attrImports) > 0
 		ruleAttrs[attr] = &attributeValue{
@@ -310,7 +311,7 @@ func convertPluginTargetDeclaration(args gazelleLanguage.GenerateArgs, pluginId 
 	return targetRule, ruleAttrs
 }
 
-func targetAttributesToRelsToImport(args gazelleLanguage.GenerateArgs, attrs map[string]*attributeValue) []string {
+func targetAttributesToRelsToImport(pkg string, attrs map[string]*attributeValue) []string {
 	relToImport := []string{}
 
 	// By default it is assumed all imports are workspace-relative paths.
@@ -328,12 +329,12 @@ func targetAttributesToRelsToImport(args gazelleLanguage.GenerateArgs, attrs map
 	return relToImport
 }
 
-func convertPluginAttribute(args gazelleLanguage.GenerateArgs, val interface{}) ([]interface{}, []plugin.TargetImport, bool) {
+func convertPluginAttribute(pkg string, val interface{}) ([]interface{}, []plugin.TargetImport, bool) {
 	if a, isArray := val.([]interface{}); isArray {
 		var r []interface{}
 		var i []plugin.TargetImport
 		for _, v := range a {
-			newR, newI, _ := convertPluginAttribute(args, v)
+			newR, newI, _ := convertPluginAttribute(pkg, v)
 			if newR != nil {
 				r = append(r, newR...)
 			}
@@ -356,7 +357,7 @@ func convertPluginAttribute(args gazelleLanguage.GenerateArgs, val interface{}) 
 	// Normalize gazelle labels to be relative to the BUILD file
 	if l, isLabel := val.(gazelleLabel.Label); isLabel {
 		// TODO: also convert the `args.Config.RepoName` repo to relative?
-		return []interface{}{l.Rel("", args.Rel)}, nil, false
+		return []interface{}{l.Rel("", pkg)}, nil, false
 	}
 
 	return []interface{}{val}, nil, false
@@ -452,15 +453,15 @@ func (host *GazelleHost) runSourceCodeQueries(queries plugin.NamedQueries, sourc
 }
 
 // Collect source files managed by this BUILD and batch them by plugins interested in them.
-func (host *GazelleHost) collectSourceFilesByPlugin(cfg *BUILDConfig, args gazelleLanguage.GenerateArgs) (map[plugin.PluginId][]string, map[string][]plugin.PluginId, map[plugin.PluginId]map[string][]string) {
+func (host *GazelleHost) collectSourceFilesByPlugin(cfg *BUILDConfig, c *config.Config, files []string) (map[plugin.PluginId][]string, map[string][]plugin.PluginId, map[plugin.PluginId]map[string][]string) {
 	pluginSourceFiles := make(map[plugin.PluginId][]string, len(cfg.pluginPrepareResults))
 	sourceFilePlugins := make(map[string][]plugin.PluginId)
 	pluginSourceGroupFiles := make(map[plugin.PluginId]map[string][]string, len(cfg.pluginPrepareResults))
 
 	// Collect source files managed by this BUILD for each plugin.
-	for _, f := range args.RegularFiles {
+	for _, f := range files {
 		// Skip BUILD files
-		if args.Config.IsValidBuildFileName(f) {
+		if c.IsValidBuildFileName(f) {
 			continue
 		}
 
