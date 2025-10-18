@@ -84,7 +84,7 @@ func NewPropertyValues() PropertyValues {
 	}
 }
 
-func (pv PropertyValues) Add(name string, value interface{}) {
+func (pv *PropertyValues) Add(name string, value interface{}) {
 	pv.values[name] = value
 }
 
