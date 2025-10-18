@@ -1,6 +1,8 @@
 package gazelle
 
 import (
+	"iter"
+
 	plugin "github.com/aspect-build/aspect-gazelle/language/orion/plugin"
 )
 
@@ -86,15 +88,14 @@ type pluginConfig struct {
 	plugin.PrepareResult
 }
 
-func (c *pluginConfig) GetQueriesForFile(f string) plugin.NamedQueries {
-	fileQueries := make(plugin.NamedQueries)
-
-	for n, query := range c.PrepareResult.Queries {
-		if query.Match(f) {
-			fileQueries[n] = query
-			continue
+func (c *pluginConfig) getQueriesForFile(f string) iter.Seq2[string, plugin.QueryDefinition] {
+	return func(yield func(string, plugin.QueryDefinition) bool) {
+		for n, query := range c.PrepareResult.Queries {
+			if query.Match(f) {
+				if !yield(n, query) {
+					return
+				}
+			}
 		}
 	}
-
-	return fileQueries
 }
