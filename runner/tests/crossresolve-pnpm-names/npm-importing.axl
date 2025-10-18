@@ -1,0 +1,66 @@
+aspect.register_rule_kind("x_lib", {
+    "From": "@deps-test//my:rules.bzl",
+    "ResolveAttrs": ["deps"],
+})
+
+def prepare(_):
+    return aspect.PrepareResult(
+        sources = [
+            aspect.SourceFiles("package.json"),
+        ],
+        queries = {
+            "package_name": aspect.JsonQuery(
+                filter = "package.json",
+                query = """.name""",
+            ),
+            "dependencies": aspect.JsonQuery(
+                filter = "package.json",
+                query = """.dependencies""",
+            ),
+        },
+    )
+
+def declare_targets(ctx):
+    if not ctx.sources:
+        return
+
+    package_name = ctx.sources[0].query_results["package_name"]
+    dependencies = ctx.sources[0].query_results["dependencies"]
+
+    # A rule of a custom kind that generates js provider symbols
+    ctx.targets.add(
+        name = "i",
+        kind = "x_lib",
+        attrs = {
+            "deps":  [
+                # Imports identified by name, not standard paths.
+                # These names align with pnpm workspace:* specifiers
+                # which allows them to be resolved even in lazy mode.
+                aspect.Import(
+                    id = dep,
+                    provider = "pkg-aligning-deps",
+                    src = "%s:a" % ctx.rel,
+                )
+                for dep, version in dependencies[0].items()
+                if version.startswith("workspace:*")
+            ] + [
+                # A dependency on an npm package (provider=js)
+                aspect.Import(
+                    id = "typescript",
+                    provider = "js",
+                ),
+            ],
+        },
+
+        # The target can be imported by package name
+        symbols = [aspect.Symbol(
+            id = package_name[0],
+            provider = "pkg-aligning-deps",
+        )] if package_name else [],
+    )
+
+aspect.register_configure_extension(
+    id = "pkg-aligning-deps",
+    prepare = prepare,
+    declare = declare_targets,
+)

@@ -1,0 +1,18 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@deps-test//my:rules.bzl", "x_lib")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+# gazelle:js_npm_package_target_name pkg
+
+npm_link_all_packages(name = "node_modules")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = [":__subpackages__"],
+)
+
+x_lib(
+    name = "i",
+    deps = [":node_modules/typescript"],
+)

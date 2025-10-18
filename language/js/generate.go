@@ -978,7 +978,7 @@ func (ts *typeScriptLang) collectFileLabels(args language.GenerateArgs) {
 // Add rules representing packages, node_modules etc
 func (ts *typeScriptLang) addPackageRules(cfg *JsGazelleConfig, args language.GenerateArgs, result *language.GenerateResult) {
 	if ts.pnpmProjects.IsProject(args.Rel) {
-		addLinkAllPackagesRule(cfg, args, result)
+		addLinkAllPackagesRule(cfg, args, ts.pnpmProjects.GetProject(args.Rel), result)
 	}
 }
 
@@ -1015,11 +1015,19 @@ func (ts *typeScriptLang) addPnpmLockfile(c *config.Config, cfg *JsGazelleConfig
 	}
 }
 
-func addLinkAllPackagesRule(cfg *JsGazelleConfig, args language.GenerateArgs, result *language.GenerateResult) {
+func addLinkAllPackagesRule(cfg *JsGazelleConfig, args language.GenerateArgs, pnpmProject *pnpm.PnpmProject, result *language.GenerateResult) {
 	npmLinkAll := rule.NewRule(NpmLinkAllKind, cfg.npmLinkAllTargetName)
 
 	result.Gen = append(result.Gen, npmLinkAll)
 	result.Imports = append(result.Imports, newLinkAllPackagesImports())
+
+	// Index the lockfile to discover named imports
+	result.RelsToIndex = append(result.RelsToIndex, cfg.pnpmLockRel)
+
+	// Also index the local references which might have symbols defined based on package name.
+	for _, rel := range pnpmProject.GetLocalReferences() {
+		result.RelsToIndex = append(result.RelsToIndex, rel)
+	}
 
 	BazelLog.Infof("add rule '%s' '%s:%s'", npmLinkAll.Kind(), args.Rel, npmLinkAll.Name())
 }

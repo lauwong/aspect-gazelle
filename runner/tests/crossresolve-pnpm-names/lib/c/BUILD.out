@@ -1,0 +1,29 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@deps-test//my:rules.bzl", "x_lib")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+# gazelle:js_package_rule_kind js_library
+
+npm_link_all_packages(name = "node_modules")
+
+ts_project(
+    name = "c",
+    srcs = [
+        "index.ts",
+        "package.json",
+    ],
+    deps = [":node_modules/@aspect-test/f"],
+)
+
+js_library(
+    name = "pkg",
+    srcs = [],
+    visibility = ["//:__pkg__"],
+    deps = [":c"],
+)
+
+x_lib(
+    name = "i",
+    deps = ["//:node_modules/typescript"],
+)

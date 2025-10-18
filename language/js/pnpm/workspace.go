@@ -139,6 +139,10 @@ func (p *PnpmProject) addLocalReference(pkg, dir string) {
 	p.workspace.referenced[normalizeProject(dir)] = true
 }
 
+func (p *PnpmProject) GetLocalReferences() map[string]string {
+	return p.references
+}
+
 func (p *PnpmProject) GetLocalReference(pkg string) (string, bool) {
 	dir, found := p.references[pkg]
 	return dir, found
