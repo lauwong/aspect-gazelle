@@ -75,7 +75,7 @@ func (re *GazelleHost) importsGenerateRules(cfg *BUILDConfig, c *config.Config, 
 func (re *GazelleHost) Imports(c *config.Config, r *rule.Rule, f *rule.File) []resolve.ImportSpec {
 	BazelLog.Debugf("Imports(%s): //%s:%s", GazelleLanguageName, f.Pkg, r.Name())
 
-	cfg := c.Exts[GazelleLanguageName].(*BUILDConfig)
+	cfg := getBUILDConfig(c, f.Pkg)
 
 	// If GenerateRules() was not run by gazelle
 	if !cfg.generated {

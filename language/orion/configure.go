@@ -38,13 +38,13 @@ func (configurer *GazelleHost) Configure(c *config.Config, rel string, f *rule.F
 	BazelLog.Tracef("Configure(%s): %s", GazelleLanguageName, rel)
 
 	// Generate hierarchical configuration.
+	var config *BUILDConfig
 	if rel == "" {
-		c.Exts[GazelleLanguageName] = NewRootConfig(c.RepoName)
+		config = NewRootConfig(c.RepoName)
 	} else {
-		c.Exts[GazelleLanguageName] = c.Exts[GazelleLanguageName].(*BUILDConfig).NewChildConfig(rel)
+		config = c.Exts[GazelleLanguageName].(*BUILDConfig).NewChildConfig(rel)
 	}
-
-	config := c.Exts[GazelleLanguageName].(*BUILDConfig)
+	c.Exts[GazelleLanguageName] = config
 
 	// Record directives from the existing BUILD file.
 	if f != nil {
@@ -113,6 +113,17 @@ func configToPrepareContext(p plugin.Plugin, cfg *BUILDConfig) plugin.PrepareCon
 	}
 
 	return ctx
+}
+
+func getBUILDConfig(c *config.Config, rel string) *BUILDConfig {
+	cfg, ok := c.Exts[GazelleLanguageName].(*BUILDConfig)
+	if !ok || cfg == nil {
+		BazelLog.Fatalf("Expected BUILDConfig in config.Exts[%q], got %T", GazelleLanguageName, c.Exts[GazelleLanguageName])
+	}
+	if cfg.rel != rel {
+		BazelLog.Fatalf("Mismatched BUILDConfig rel:%q, expected:%q", cfg.rel, rel)
+	}
+	return cfg
 }
 
 func parsePropertyValue(p plugin.Property, values []string) (interface{}, error) {

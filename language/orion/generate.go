@@ -42,7 +42,7 @@ const (
 func (host *GazelleHost) GenerateRules(args gazelleLanguage.GenerateArgs) gazelleLanguage.GenerateResult {
 	BazelLog.Tracef("GenerateRules(%s): %s", GazelleLanguageName, args.Rel)
 
-	cfg := args.Config.Exts[GazelleLanguageName].(*BUILDConfig)
+	cfg := getBUILDConfig(args.Config, args.Rel)
 
 	// Mark this BUILDConfig as generated since it is having real rules generated.
 	cfg.generated = true
