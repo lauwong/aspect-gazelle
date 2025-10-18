@@ -6,12 +6,14 @@ import (
 	"github.com/aspect-build/aspect-gazelle/common/bazel/workspace"
 )
 
-var workingDirectory string
+var wkspDirectory string
 
-func FindWorkspaceDirectory() string {
-	if workingDirectory == "" {
+func init() {
+	wkspDirectory = os.Getenv("BUILD_WORKSPACE_DIRECTORY")
+
+	if wkspDirectory == "" {
 		// Support running cli via `bazel run`
-		workingDirectory = os.Getenv("BUILD_WORKING_DIRECTORY")
+		workingDirectory := os.Getenv("BUILD_WORKING_DIRECTORY")
 
 		// Fallback to CWD
 		if workingDirectory == "" {
@@ -21,11 +23,18 @@ func FindWorkspaceDirectory() string {
 			}
 			workingDirectory = wd
 		}
+
+		// Find the workspace from the working directory
+		finder := workspace.DefaultFinder
+		wr, err := finder.Find(workingDirectory)
+		if err != nil {
+			panic(err)
+		}
+
+		wkspDirectory = wr
 	}
-	finder := workspace.DefaultFinder
-	wr, err := finder.Find(workingDirectory)
-	if err != nil {
-		return ""
-	}
-	return wr
+}
+
+func FindWorkspaceDirectory() string {
+	return wkspDirectory
 }

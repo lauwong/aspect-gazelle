@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/aspect-build/aspect-gazelle/common/bazel"
 	BazelLog "github.com/aspect-build/aspect-gazelle/common/logger"
 	"github.com/aspect-build/aspect-gazelle/runner"
 	"github.com/aspect-build/aspect-gazelle/runner/pkg/ibp"
@@ -44,15 +45,14 @@ func init() {
  * interactive terminal progress, tracing and more.
  */
 func main() {
-	// Convenience for local development: under `bazel run <binary target>` respect the
-	// users working directory, don't run in the execroot
-	if wd, exists := os.LookupEnv("BUILD_WORKING_DIRECTORY"); exists {
-		_ = os.Chdir(wd)
-	}
+	log.SetPrefix("aspect-gazelle: ")
+	log.SetFlags(0) // don't print timestamps
+
+	wd := bazel.FindWorkspaceDirectory()
 
 	cmd, mode, progress, args := parseArgs()
 
-	c := runner.New(progress)
+	c := runner.New(wd, progress)
 
 	// Add languages
 	for _, lang := range envLanguages {

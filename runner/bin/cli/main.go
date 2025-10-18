@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/aspect-build/aspect-gazelle/common/bazel"
 	"github.com/aspect-build/aspect-gazelle/common/buildinfo"
 	host "github.com/aspect-build/aspect-gazelle/language/orion"
 	"github.com/aspect-build/aspect-gazelle/runner"
@@ -21,15 +22,11 @@ import (
  * Supports additional features such as incremental builds via the Incremental Build Protocol.
  */
 func main() {
-	// Convenience for local development: under `bazel run <binary target>` respect the
-	// users working directory, don't run in the execroot
-	if wd, exists := os.LookupEnv("BUILD_WORKING_DIRECTORY"); exists {
-		_ = os.Chdir(wd)
-	}
+	wd := bazel.FindWorkspaceDirectory()
 
 	mode, languages, plugins, args := parseArgs()
 
-	c := runner.New(os.Getenv("GAZELLE_PROGRESS") != "")
+	c := runner.New(wd, os.Getenv("GAZELLE_PROGRESS") != "")
 
 	// Add languages
 	fmt.Printf("Languages: %v\n", languages)

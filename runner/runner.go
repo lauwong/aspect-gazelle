@@ -25,7 +25,6 @@ import (
 	"strings"
 
 	"github.com/EngFlow/gazelle_cc/language/cc"
-	"github.com/aspect-build/aspect-gazelle/common/bazel"
 	"github.com/aspect-build/aspect-gazelle/common/cache"
 	js "github.com/aspect-build/aspect-gazelle/language/js"
 	orion "github.com/aspect-build/aspect-gazelle/language/orion"
@@ -46,6 +45,8 @@ import (
 )
 
 type GazelleRunner struct {
+	workspaceDir string
+
 	tracer trace.Tracer
 
 	interactive  bool
@@ -90,8 +91,10 @@ func init() {
 	git.SetupGitIgnore()
 }
 
-func New(showProgress bool) *GazelleRunner {
+func New(workspaceDir string, showProgress bool) *GazelleRunner {
 	c := &GazelleRunner{
+		workspaceDir: workspaceDir,
+
 		tracer: otel.GetTracerProvider().Tracer("aspect-gazelle"),
 
 		interactive:  term.IsTerminal(int(os.Stdout.Fd())) && os.Getenv("CI") == "" && os.Getenv("BAZEL_TEST") == "",
@@ -141,24 +144,14 @@ func (c *GazelleRunner) AddLanguage(lang GazelleLanguage) {
 	}
 }
 
-func (runner *GazelleRunner) PrepareGazelleArgs(mode GazelleMode, args []string) (string, []string) {
-	var wd string
-	if wsRoot := bazel.FindWorkspaceDirectory(); wsRoot != "" {
-		wd = wsRoot
-	} else {
-		var err error
-		if wd, err = os.Getwd(); err != nil {
-			log.Fatal(err)
-		}
-	}
-
+func (runner *GazelleRunner) prepareGazelleArgs(mode GazelleMode, args []string) []string {
 	// Append the aspect-cli mode flag to the args parsed by gazelle.
 	fixArgs := []string{"--mode=" + mode}
 
 	// Append additional args including specific directories to fix.
 	fixArgs = append(fixArgs, args...)
 
-	return wd, fixArgs
+	return fixArgs
 }
 
 // Instantiate an instance of each language enabled in this GazelleRunner instance.
@@ -190,7 +183,7 @@ func (runner *GazelleRunner) Generate(cmd GazelleCommand, mode GazelleMode, args
 	))
 	defer t.End()
 
-	wd, fixArgs := runner.PrepareGazelleArgs(mode, args)
+	fixArgs := runner.prepareGazelleArgs(mode, args)
 
 	if mode == Fix && runner.interactive {
 		fmt.Printf("Updating BUILD files for %s\n", strings.Join(runner.languageKeys, ", "))
@@ -199,7 +192,7 @@ func (runner *GazelleRunner) Generate(cmd GazelleCommand, mode GazelleMode, args
 	// Run gazelle
 	langs := runner.instantiateLanguages()
 	configs := runner.instantiateConfigs()
-	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, cmd, configs, langs, fixArgs)
+	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(runner.workspaceDir, cmd, configs, langs, fixArgs)
 
 	if mode == Fix && runner.interactive {
 		fmt.Printf("%v BUILD %s visited\n", visited, pluralize("file", visited))
@@ -216,13 +209,13 @@ func (p *GazelleRunner) Watch(watchAddress string, cmd GazelleCommand, mode Gaze
 	}
 
 	// Params for the underlying gazelle call
-	wd, fixArgs := p.PrepareGazelleArgs(mode, args)
+	fixArgs := p.prepareGazelleArgs(mode, args)
 
 	// Initial run and status update to stdout.
-	fmt.Printf("Initialize BUILD file generation --watch in %v\n", wd)
+	fmt.Printf("Initialize BUILD file generation --watch in %v\n", p.workspaceDir)
 	languages := p.instantiateLanguages()
 	configs := p.instantiateConfigs()
-	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, cmd, configs, languages, fixArgs)
+	visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(p.workspaceDir, cmd, configs, languages, fixArgs)
 	if err != nil {
 		return fmt.Errorf("failed to run gazelle fix/update: %w", err)
 	}
@@ -245,14 +238,14 @@ func (p *GazelleRunner) Watch(watchAddress string, cmd GazelleCommand, mode Gaze
 
 		// The directories that have changed which gazelle should update.
 		// This assumes all enabled gazelle languages support incremental updates.
-		changedDirs := computeUpdatedDirs(wd, cs.Sources)
+		changedDirs := computeUpdatedDirs(p.workspaceDir, cs.Sources)
 
 		fmt.Printf("Detected changes in %v\n", changedDirs)
 
 		// Run gazelle
 		languages := p.instantiateLanguages()
 		configs := p.instantiateConfigs()
-		visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(wd, cmd, configs, languages, append(fixArgs, changedDirs...))
+		visited, updated, err := vendoredGazelle.RunGazelleFixUpdate(p.workspaceDir, cmd, configs, languages, append(fixArgs, changedDirs...))
 		if err != nil {
 			return fmt.Errorf("failed to run gazelle fix/update: %w", err)
 		}
