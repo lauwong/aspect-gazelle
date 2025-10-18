@@ -2,9 +2,6 @@ package gazelle
 
 import (
 	plugin "github.com/aspect-build/aspect-gazelle/language/orion/plugin"
-	"github.com/bazelbuild/bazel-gazelle/label"
-	"github.com/bmatcuk/doublestar/v4"
-	"github.com/emirpasic/gods/maps/linkedhashmap"
 )
 
 type BUILDConfig struct {
@@ -21,20 +18,16 @@ type BUILDConfig struct {
 	// All directives of this BUILD
 	directiveRawValues map[string][]string
 
-	// Custom/overridden resolutions
-	resolves *linkedhashmap.Map
-
 	// Plugin specific config
 	pluginPrepareResults map[plugin.PluginId]pluginConfig
 }
 
 func NewRootConfig(repoName string) *BUILDConfig {
 	return &BUILDConfig{
-		repoName:           repoName,
-		rel:                "",
-		directiveRawValues: make(map[string][]string),
+		repoName: repoName,
+		rel:      "",
 
-		resolves: linkedhashmap.New(),
+		directiveRawValues: make(map[string][]string),
 
 		pluginPrepareResults: make(map[string]pluginConfig),
 	}
@@ -54,10 +47,6 @@ func (c *BUILDConfig) NewChildConfig(rel string) *BUILDConfig {
 	// Non-inherited that require cloning
 	// TODO: verify these should not be inherited
 	cCopy.pluginPrepareResults = make(map[string]pluginConfig)
-
-	// Inherited that must be cloned
-	cCopy.resolves = linkedhashmap.New()
-	c.resolves.Each(cCopy.resolves.Put)
 
 	return &cCopy
 }
@@ -89,21 +78,6 @@ func (c *BUILDConfig) getRawValue(key string, inherit bool) ([]string, bool) {
 	}
 
 	return nil, false
-}
-
-func (c *BUILDConfig) GetResolution(imprt string) *label.Label {
-	config := c
-	for config != nil {
-		for _, glob := range config.resolves.Keys() {
-			if doublestar.MatchUnvalidated(glob.(string), imprt) {
-				resolveLabel, _ := config.resolves.Get(glob)
-				return resolveLabel.(*label.Label)
-			}
-		}
-		config = config.parent
-	}
-
-	return nil
 }
 
 // An extension of PrepareContext+Result to add internal utils
