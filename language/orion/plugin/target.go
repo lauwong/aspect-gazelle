@@ -1,11 +1,5 @@
 package plugin
 
-import (
-	"strings"
-
-	common "github.com/aspect-build/aspect-gazelle/common"
-)
-
 type Symbol struct {
 	Id       string // The unique id of the symbol
 	Provider string // The provider type of the symbol
@@ -52,31 +46,4 @@ type RemoveTargetAction struct {
 	TargetAction
 	Name string
 	Kind string
-}
-
-func symbolComparator(a, b interface{}) int {
-	nc := strings.Compare(a.(Symbol).Id, b.(Symbol).Id)
-	if nc != 0 {
-		return nc
-	}
-
-	return strings.Compare(a.(Symbol).Provider, b.(Symbol).Provider)
-}
-
-func TargetImportComparator(a, b interface{}) int {
-	nc := symbolComparator(a, b)
-	if nc != 0 {
-		return nc
-	}
-
-	return strings.Compare(a.(TargetImport).From, b.(TargetImport).From)
-}
-
-func TargetExportComparator(a, b interface{}) int {
-	nc := symbolComparator(a, b)
-	if nc != 0 {
-		return nc
-	}
-
-	return common.LabelComparator(a.(TargetSymbol).Label, b.(TargetSymbol).Label)
 }
