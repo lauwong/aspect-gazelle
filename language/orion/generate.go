@@ -77,7 +77,7 @@ func (host *GazelleHost) generateRules(cfg *BUILDConfig, args gazelleLanguage.Ge
 		for _, pluginId := range pluginIds {
 			prep := cfg.pluginPrepareResults[pluginId]
 			for queryId, query := range prep.getQueriesForFile(sourceFile) {
-				queries[fmt.Sprintf("%s|%s", pluginId, queryId)] = query
+				queries[pluginId+"|"+queryId] = query
 			}
 		}
 
@@ -113,7 +113,7 @@ func (host *GazelleHost) generateRules(cfg *BUILDConfig, args gazelleLanguage.Ge
 	for pluginId, _ := range cfg.pluginPrepareResults {
 		pluginSrcs := pluginSourceFiles[pluginId]
 
-		queryPrefix := fmt.Sprintf("%s|", pluginId)
+		queryPrefix := pluginId + "|"
 
 		// Collect the query results for this plugin's source files
 		targetSources := make(map[string]plugin.TargetSource, len(pluginSrcs))
