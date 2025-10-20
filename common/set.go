@@ -49,7 +49,7 @@ func NewLabelSet(from label.Label) *LabelSet {
 
 func (s *LabelSet) Add(l *label.Label) {
 	if s.from.Equal(*l) {
-		BazelLog.Debugf("ignore %q dependency on self", s.from.String())
+		BazelLog.Debugf("ignore %v dependency on self", s.from)
 		return
 	}
 
