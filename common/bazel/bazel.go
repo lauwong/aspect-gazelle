@@ -26,15 +26,15 @@ func init() {
 
 		// Find the workspace from the working directory
 		finder := workspace.DefaultFinder
-		wr, err := finder.Find(workingDirectory)
-		if err != nil {
-			panic(err)
-		}
-
+		wr, _ := finder.Find(workingDirectory)
 		wkspDirectory = wr
 	}
 }
 
 func FindWorkspaceDirectory() string {
+	if wkspDirectory == "" {
+		panic("workspace directory not initialized")
+	}
+
 	return wkspDirectory
 }
