@@ -42,13 +42,13 @@ func NewTsWorkspace(pnpmProjects *pnpm.PnpmProjectMap) *TsWorkspace {
 	}
 }
 
-func (tc *TsWorkspace) AddTsConfigFile(root, rel, fileName string) {
+func (tc *TsWorkspace) SetTsConfigFile(root, rel, fileName string) {
 	if c := tc.cm.configFiles[rel]; c != nil {
 		fmt.Printf("Duplicate tsconfig file %s: %s and %s", path.Join(rel, fileName), c.rel, c.fileName)
 		return
 	}
 
-	BazelLog.Debugf("Adding tsconfig file %s/%s", rel, fileName)
+	BazelLog.Debugf("Declaring tsconfig file %s: %s", rel, fileName)
 
 	tc.cm.configFiles[rel] = &workspacePath{
 		root:     root,
@@ -68,21 +68,21 @@ func (tc *TsWorkspace) GetTsConfigFile(rel string) *TsConfig {
 	tc.cm.configsMutex.Lock()
 	defer tc.cm.configsMutex.Unlock()
 
+	filePath := path.Join(p.rel, p.fileName)
+
 	// Check for previously parsed
-	if c := tc.cm.configs[rel]; c != nil {
+	if c := tc.cm.configs[filePath]; c != nil {
 		if c == &InvalidTsconfig {
 			return nil
 		}
 		return c
 	}
 
-	c, err := parseTsConfigJSONFile(tc.cm.configs, tc.tsConfigResolver, p.root, path.Join(p.rel, p.fileName))
+	c, err := parseTsConfigJSONFile(tc.cm.configs, tc.tsConfigResolver, p.root, filePath)
 	if err != nil {
-		fmt.Printf("Failed to parse tsconfig file %s: %v\n", path.Join(p.rel, p.fileName), err)
+		fmt.Printf("Failed to parse tsconfig file %s: %v\n", filePath, err)
 		return nil
 	}
-
-	BazelLog.Debugf("Parsed tsconfig file %s/%s", p.rel, p.fileName)
 
 	return c
 }

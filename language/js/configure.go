@@ -104,7 +104,7 @@ func (ts *typeScriptLang) readConfigurations(c *config.Config, rel string) {
 
 	// tsconfig
 	if common.WalkHasPath(rel, config.tsconfigName) {
-		ts.tsconfig.AddTsConfigFile(c.RepoRoot, rel, config.tsconfigName)
+		ts.tsconfig.SetTsConfigFile(c.RepoRoot, rel, config.tsconfigName)
 	}
 }
 

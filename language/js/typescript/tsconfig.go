@@ -169,6 +169,8 @@ func parseTsConfigJSONFile(parsed map[string]*TsConfig, resolver TsConfigResolve
 
 	config, err := parseTsConfigJSON(parsed, resolver, root, tsconfig, content)
 	if config != nil {
+		BazelLog.Debugf("Parsed tsconfig file %s", tsconfig)
+
 		parsed[tsconfig] = config
 	}
 	return config, err
