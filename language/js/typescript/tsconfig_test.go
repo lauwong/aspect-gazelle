@@ -17,6 +17,7 @@
 package typescript
 
 import (
+	"bytes"
 	"path"
 	"reflect"
 	"testing"
@@ -33,7 +34,7 @@ func assertEqual(t *testing.T, a, b string, msg string) {
 }
 
 func parseTest(t *testing.T, configDir, tsconfigJSON string) *TsConfig {
-	options, err := parseTsConfigJSON(make(map[string]*TsConfig), identityResolver, ".", path.Join(configDir, "tsconfig.json"), []byte(tsconfigJSON))
+	options, err := parseTsConfigJSON(make(map[string]*TsConfig), identityResolver, ".", path.Join(configDir, "tsconfig.json"), bytes.NewReader([]byte(tsconfigJSON)))
 	if err != nil {
 		t.Fatalf("failed to parse options: %v\n\n%s", err, tsconfigJSON)
 	}

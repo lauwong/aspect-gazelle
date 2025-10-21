@@ -17,6 +17,7 @@
 package typescript
 
 import (
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -162,12 +163,13 @@ func parseTsConfigJSONFile(parsed map[string]*TsConfig, resolver TsConfigResolve
 	// Start with invalid to prevent recursing into the same file
 	parsed[tsconfig] = &InvalidTsconfig
 
-	content, err := os.ReadFile(path.Join(root, tsconfig))
+	tsconfigFile, err := os.OpenFile(path.Join(root, tsconfig), os.O_RDONLY, os.FileMode(os.O_RDONLY))
 	if err != nil {
 		return nil, err
 	}
+	defer tsconfigFile.Close()
 
-	config, err := parseTsConfigJSON(parsed, resolver, root, tsconfig, content)
+	config, err := parseTsConfigJSON(parsed, resolver, root, tsconfig, tsconfigFile)
 	if config != nil {
 		BazelLog.Debugf("Parsed tsconfig file %s", tsconfig)
 
@@ -176,9 +178,9 @@ func parseTsConfigJSONFile(parsed map[string]*TsConfig, resolver TsConfigResolve
 	return config, err
 }
 
-func parseTsConfigJSON(parsed map[string]*TsConfig, resolver TsConfigResolver, root, tsconfig string, tsconfigContent []byte) (*TsConfig, error) {
+func parseTsConfigJSON(parsed map[string]*TsConfig, resolver TsConfigResolver, root, tsconfig string, tsconfigReader io.Reader) (*TsConfig, error) {
 	var c tsConfigJSON
-	if err := jsonr.Unmarshal(tsconfigContent, &c); err != nil {
+	if err := jsonr.NewDecoder(tsconfigReader).Decode(&c); err != nil {
 		return nil, err
 	}
 
