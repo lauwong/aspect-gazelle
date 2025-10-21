@@ -3,6 +3,7 @@ package plugin
 import (
 	"fmt"
 	"maps"
+	"slices"
 
 	starUtils "github.com/aspect-build/aspect-gazelle/language/orion/starlark/utils"
 	"go.starlark.net/starlark"
@@ -31,7 +32,7 @@ func (q *QueryCapture) Hash() (uint32, error) {
 
 func (q *QueryCapture) Freeze() {}
 func (q *QueryCapture) String() string {
-	return fmt.Sprintf("QueryCapture{%v}", maps.Keys(*q))
+	return fmt.Sprintf("QueryCapture{%v}", slices.Collect(maps.Keys(*q)))
 }
 func (q *QueryCapture) Truth() starlark.Bool { return starlark.True }
 func (q *QueryCapture) Type() string         { return "QueryCapture" }
@@ -159,7 +160,7 @@ var _ starlark.Value = (*NamedQueries)(nil)
 var _ starlark.Mapping = (*NamedQueries)(nil)
 
 func (nq NamedQueries) String() string {
-	return fmt.Sprintf("NamedQueries(%v)", maps.Keys(nq))
+	return fmt.Sprintf("NamedQueries(%v)", slices.Collect(maps.Keys(nq)))
 }
 func (nq NamedQueries) Type() string         { return "NamedQueries" }
 func (nq NamedQueries) Freeze()              {}
@@ -186,7 +187,7 @@ func (nq NamedQueries) Get(k starlark.Value) (v starlark.Value, found bool, err 
 var _ starlark.Mapping = (*QueryResults)(nil)
 
 func (qr QueryResults) String() string {
-	return fmt.Sprintf("QueryResults(%v)", maps.Keys(qr))
+	return fmt.Sprintf("QueryResults(%v)", slices.Collect(maps.Keys(qr)))
 }
 func (qr QueryResults) Type() string         { return "QueryResults" }
 func (qr QueryResults) Freeze()              {}
