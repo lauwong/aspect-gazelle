@@ -552,9 +552,13 @@ func (ts *typeScriptLang) addProjectRule(cfg *JsGazelleConfig, tsconfigRel strin
 	// A rule of the same name might already exist
 	existing := ruleUtils.GetFileRuleByName(args, targetName)
 
-	ruleKind := TsProjectKind
-	if !hasTranspiledSources(info.sources) {
-		ruleKind = JsLibraryKind
+	// ruleKind := TsProjectKind
+	// if !hasTranspiledSources(info.sources) {
+	// 	ruleKind = JsLibraryKind
+	// }
+	ruleKind := JsLibraryKind
+	if group.testonly {
+		ruleKind = JsTestKind
 	}
 	sourceRule := rule.NewRule(ruleKind, targetName)
 
@@ -567,9 +571,9 @@ func (ts *typeScriptLang) addProjectRule(cfg *JsGazelleConfig, tsconfigRel strin
 	sourceRule.SetPrivateAttr("ts_project_info", info)
 	sourceRule.SetAttr("srcs", info.sources.Values())
 
-	if group.testonly {
-		sourceRule.SetAttr("testonly", true)
-	}
+	// if group.testonly {
+	// 	sourceRule.SetAttr("testonly", true)
+	// }
 
 	if len(group.visibility) > 0 {
 		sourceRule.SetAttr("visibility", group.visibility)

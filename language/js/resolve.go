@@ -53,6 +53,8 @@ func (ts *typeScriptLang) Imports(c *config.Config, r *rule.Rule, f *rule.File) 
 		fallthrough
 	case JsLibraryKind:
 		return ts.sourceFileImports(c, r, f)
+	case JsTestKind:
+		return ts.sourceFileImports(c, r, f)
 	}
 	return nil
 }
