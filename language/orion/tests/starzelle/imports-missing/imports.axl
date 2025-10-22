@@ -1,0 +1,50 @@
+aspect.register_rule_kind("x_lib", {
+    "From": "@deps-test//my:rules.bzl",
+    "ResolveAttrs": ["deps"],
+})
+
+def declare(ctx):
+    ctx.targets.add(
+        name = "a",
+        kind = "x_lib",
+        attrs = {
+            "deps": [
+                "@predefined//:value1",
+                aspect.Import(
+                    id = "b",
+                    provider = "x",
+                    src = "%s:x_lib" % ctx.rel,
+                ),
+                "@predefined//:value2",
+                aspect.Import(
+                    id = "o",
+                    provider = "x",
+                    optional = True,
+                ),
+                "@predefined//:value3",
+                aspect.Import(
+                    id = ".c",
+                    provider = "x",
+                    src = "%s:x_lib" % ctx.rel,
+                ),
+                "@predefined//:value4",
+                aspect.Import(
+                    id = "d",
+                    provider = "x",
+                ),
+            ],
+        },
+    )
+    ctx.targets.add(
+        name = "b",
+        kind = "x_lib",
+        symbols = [aspect.Symbol(
+            id = ctx.rel + ".c",
+            provider = "x",
+        )],
+    )
+
+aspect.register_configure_extension(
+    id = "imports-missing",
+    declare = declare,
+)
