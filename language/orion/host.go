@@ -122,15 +122,15 @@ func (h *GazelleHost) loadEnvStarzellePlugins() {
 			BazelLog.Warnf("No orion plugins found in %q", builtinPluginDir)
 		}
 
+		// Sort to ensure a consistent order not dependent on the fs or glob ordering.
+		sort.Strings(builtinDirPlugins)
+
 		builtinPlugins = append(builtinPlugins, builtinDirPlugins...)
 	}
 
 	if len(builtinPlugins) == 0 {
 		return
 	}
-
-	// Sort to ensure a consistent order not dependent on the fs or glob ordering.
-	sort.Strings(builtinPlugins)
 
 	// Split the plugin paths to dir + rel for better logging and load API
 	// Only relativize if builtinPluginDir is not absolute
