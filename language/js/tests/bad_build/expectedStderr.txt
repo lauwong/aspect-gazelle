@@ -1,0 +1,1 @@
+gazelle: %WORKSPACEPATH%/BUILD.bazel:5:25: syntax error near ]
