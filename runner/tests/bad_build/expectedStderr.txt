@@ -1,0 +1,1 @@
+aspect-gazelle: %WORKSPACEPATH%/BUILD.bazel:3:2: syntax error near )
