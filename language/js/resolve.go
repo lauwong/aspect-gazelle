@@ -293,7 +293,7 @@ func (ts *typeScriptLang) Resolve(
 
 	// TsProject imports are resolved as deps
 	switch r.Kind() {
-	case TsProjectKind, JsLibraryKind, TsConfigKind, TsProtoLibraryKind:
+	case TsProjectKind, JsLibraryKind, JsTestKind, TsConfigKind, TsProtoLibraryKind:
 		deps := common.NewLabelSet(from)
 
 		// Support this target representing a project or a package
