@@ -2,10 +2,10 @@ package gazelle
 
 import (
 	"bytes"
-	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -53,12 +53,12 @@ func IsRulesTsProtoBuiltin(imp string) bool {
 }
 
 func GetProtoImports(filepath string) ([]string, error) {
-	content, err := ioutil.ReadFile(filepath)
+	content, err := os.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	imports := make([]string, 0)
+	imports := []string{}
 
 	for _, match := range protoRe.FindAllSubmatch(content, -1) {
 		switch {
@@ -71,7 +71,7 @@ func GetProtoImports(filepath string) ([]string, error) {
 		}
 	}
 
-	sort.Strings(imports)
+	slices.Sort(imports)
 
 	return imports, nil
 }
