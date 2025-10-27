@@ -12,8 +12,7 @@ func TestGitIgnore(t *testing.T) {
 	shouldMatch := func(what string, matcher isGitIgnored, matches ...string) {
 		for _, m := range matches {
 			// Use trailing slash in test data to indicate directory
-			isDir := strings.HasSuffix(m, "/")
-			m = strings.TrimSuffix(m, "/")
+			m, isDir := strings.CutSuffix(m, "/")
 
 			if !(matcher != nil && matcher(m, isDir)) {
 				t.Error(fmt.Sprintf("%s should match '%s'", what, m))
@@ -23,8 +22,7 @@ func TestGitIgnore(t *testing.T) {
 	shouldNotMatch := func(what string, matcher isGitIgnored, matches ...string) {
 		for _, m := range matches {
 			// Use trailing slash in test data to indicate directory
-			isDir := strings.HasSuffix(m, "/")
-			m = strings.TrimSuffix(m, "/")
+			m, isDir := strings.CutSuffix(m, "/")
 
 			if matcher != nil && matcher(m, isDir) {
 				t.Error(fmt.Sprintf("%s should NOT match '%s'", what, m))
@@ -194,8 +192,8 @@ func TestGitIgnore(t *testing.T) {
 // Util method to invoke GitIgnore.AddIgnore() with the trimmed string
 // value to allow tests to be written with multiline strings including indentation.
 func addIgnoreFileContent(parentPatterns []gitignore.Pattern, rel, ignoreContents string) (isGitIgnored, []gitignore.Pattern) {
-	ignoreLines := make([]string, 0)
-	for _, line := range strings.Split(ignoreContents, "\n") {
+	ignoreLines := []string{}
+	for line := range strings.SplitSeq(ignoreContents, "\n") {
 		if trimmdLine := strings.TrimSpace(line); trimmdLine != "" {
 			ignoreLines = append(ignoreLines, trimmdLine)
 		}
