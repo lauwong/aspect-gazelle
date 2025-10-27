@@ -584,6 +584,21 @@ func (ts *typeScriptLang) addProjectRule(cfg *JsGazelleConfig, tsconfigRel strin
 		sourceRule.DelAttr("isolated_typecheck")
 	}
 
+	if ruleKind == JsLibraryKind || ruleKind == JsTestKind {
+		// Preserve custom attributes from existing rule if it exists
+		if existing := ruleUtils.GetFileRuleByName(args, ruleName); existing != nil {
+			// Preserve data attribute
+			if existingData := existing.Attr("data"); existingData != nil {
+				sourceRule.SetAttr("data", existingData)
+			}
+
+			// Preserve tags attribute
+			if existingTags := existing.Attr("tags"); existingTags != nil {
+				sourceRule.SetAttr("tags", existingTags)
+			}
+		}
+	}
+
 	// If the rule kind is not a ts_project rule then delete all tsconfig related attributes.
 	// Delete from the existing rule if it exists to bypass any merge/#keep logic related to ts_project.
 	if ruleKind != TsProjectKind {
