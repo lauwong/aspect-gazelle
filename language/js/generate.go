@@ -586,7 +586,7 @@ func (ts *typeScriptLang) addProjectRule(cfg *JsGazelleConfig, tsconfigRel strin
 
 	if (ruleKind == JsLibraryKind || ruleKind == JsTestKind) && existing != nil {
 		// Preserve custom attributes from existing rule if it exists
-		attrsToPreserve := [...]string{"data", "tags", "deps_to_remove"}
+		attrsToPreserve := [...]string{"data", "tags", "deps_to_remove", "visibility"}
 		for _, attr := range attrsToPreserve {
 			if existingAttr := existing.Attr(attr); existingAttr != nil {
 				sourceRule.SetAttr(attr, existingAttr)
