@@ -584,17 +584,12 @@ func (ts *typeScriptLang) addProjectRule(cfg *JsGazelleConfig, tsconfigRel strin
 		sourceRule.DelAttr("isolated_typecheck")
 	}
 
-	if ruleKind == JsLibraryKind || ruleKind == JsTestKind {
+	if (ruleKind == JsLibraryKind || ruleKind == JsTestKind) && existing != nil {
 		// Preserve custom attributes from existing rule if it exists
-		if existing != nil {
-			// Preserve data attribute
-			if existingData := existing.Attr("data"); existingData != nil {
-				sourceRule.SetAttr("data", existingData)
-			}
-
-			// Preserve tags attribute
-			if existingTags := existing.Attr("tags"); existingTags != nil {
-				sourceRule.SetAttr("tags", existingTags)
+		attrsToPreserve := [3]string{"data", "tags", "deps_to_remove"}
+		for attr := range attrsToPreserve {
+			if existingAttr := existing.Attr(attr); existingAttr != nil {
+				sourceRule.SetAttr(attr, existingAttr)
 			}
 		}
 	}
