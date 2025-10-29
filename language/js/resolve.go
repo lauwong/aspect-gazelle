@@ -5,7 +5,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
 
 	common "github.com/aspect-build/aspect-gazelle/common"
 	BazelLog "github.com/aspect-build/aspect-gazelle/common/logger"
@@ -294,8 +293,7 @@ func (ts *typeScriptLang) Resolve(
 	importData interface{},
 	from label.Label,
 ) {
-	start := time.Now()
-	BazelLog.Infof("Resolve(%s): //%s:%s", LanguageName, from.Pkg, r.Name())
+	BazelLog.Debugf("Resolve(%s): //%s:%s", LanguageName, from.Pkg, r.Name())
 
 	// TsProject imports are resolved as deps
 	switch r.Kind() {
@@ -358,8 +356,6 @@ func (ts *typeScriptLang) Resolve(
 			r.SetAttr("srcs", srcs)
 		}
 	}
-
-	BazelLog.Infof("Resolve(%s): //%s:%s DONE in %s", LanguageName, from.Pkg, r.Name(), time.Since(start).String())
 }
 func (ts *typeScriptLang) addTsLib(
 	c *config.Config,
