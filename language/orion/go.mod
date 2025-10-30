@@ -12,7 +12,7 @@ require (
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/itchyny/gojq v0.12.18-0.20251005142832-e46d0344f209
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	go.starlark.net v0.0.0-20250906160240-bf296ed553ea
+	go.starlark.net v0.0.0-20251029211736-7849196f18cf
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/sync v0.17.0
 )

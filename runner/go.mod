@@ -66,7 +66,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
-	go.starlark.net v0.0.0-20250906160240-bf296ed553ea // indirect
+	go.starlark.net v0.0.0-20251029211736-7849196f18cf // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/op/go-logging.v1 v1.0.0-20160211212156-b2cb9fa56473 // indirect
