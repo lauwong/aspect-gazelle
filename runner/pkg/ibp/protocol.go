@@ -76,8 +76,7 @@ type CycleMessage struct {
 }
 
 type CycleSourcesMessage struct {
-	Message
-	CycleId int           `json:"cycle_id"`
+	CycleMessage
 	Sources SourceInfoMap `json:"sources"`
 }
 
@@ -207,8 +206,10 @@ func (p *aspectBazelProtocol) Cycle(changes SourceInfoMap) error {
 	fmt.Printf("%s Sending cycle #%v (%v changes) to %s\n", color.GreenString("INFO:"), cycle_id, len(changes), p.socketPath)
 
 	c := CycleSourcesMessage{
-		Message: Message{Kind: "CYCLE"},
-		CycleId: cycle_id,
+		CycleMessage: CycleMessage{
+			Message: Message{Kind: "CYCLE"},
+			CycleId: cycle_id,
+		},
 		Sources: changes,
 	}
 	if err := p.socket.Send(c); err != nil {

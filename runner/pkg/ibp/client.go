@@ -161,10 +161,10 @@ func convertWireCycle(msg map[string]interface{}) (CycleSourcesMessage, error) {
 	}
 
 	return CycleSourcesMessage{
-		Message: Message{
-			Kind: "CYCLE",
+		CycleMessage: CycleMessage{
+			Message: Message{Kind: "CYCLE"},
+			CycleId: cycleId,
 		},
-		CycleId: cycleId,
 		Sources: sources,
 	}, nil
 }
