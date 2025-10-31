@@ -829,7 +829,7 @@ func (ts *typeScriptLang) collectImports(cfg *JsGazelleConfig, parserCache cache
 
 	for _, importPath := range parseResults.Imports {
 		if cfg.IsImportIgnored(importPath) {
-			BazelLog.Tracef("Import ignored: %q", importPath)
+			BazelLog.Tracef("%q (%s) import of %q ignored", sourcePath, LanguageName, importPath)
 			continue
 		}
 
@@ -846,7 +846,7 @@ func (ts *typeScriptLang) collectImports(cfg *JsGazelleConfig, parserCache cache
 			SourcePath: sourcePath,
 		})
 
-		BazelLog.Tracef("Import: %q -> %q (via %q)", sourcePath, workspacePath, importPath)
+		BazelLog.Tracef("%q (%s) imports %q (via %q)", sourcePath, LanguageName, workspacePath, importPath)
 	}
 
 	return result
