@@ -71,6 +71,9 @@ var tsKinds = map[string]rule.KindInfo{
 		SubstituteAttrs: map[string]bool{},
 		MergeableAttrs: map[string]bool{
 			"srcs": true,
+			"deps_to_remove": true,
+			"data": true,
+			"tags": true,
 		},
 		ResolveAttrs: map[string]bool{
 			"deps": true,
@@ -107,6 +110,9 @@ var tsKinds = map[string]rule.KindInfo{
 		SubstituteAttrs: map[string]bool{},
 		MergeableAttrs: map[string]bool{
 			"srcs": true,
+			"deps_to_remove": true,
+			"data": true,
+			"tags": true,
 		},
 		ResolveAttrs: map[string]bool{
 			"deps": true,
