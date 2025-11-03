@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	common "github.com/aspect-build/aspect-gazelle/common"
 	BazelLog "github.com/aspect-build/aspect-gazelle/common/logger"
@@ -64,8 +63,7 @@ func (kt *kotlinLang) Embeds(r *rule.Rule, from label.Label) []label.Label {
 }
 
 func (kt *kotlinLang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.RemoteCache, r *rule.Rule, importData interface{}, from label.Label) {
-	start := time.Now()
-	BazelLog.Infof("Resolve(%s): //%s:%s", LanguageName, from.Pkg, r.Name())
+	BazelLog.Debugf("Resolve(%s): //%s:%s", LanguageName, from.Pkg, r.Name())
 
 	if r.Kind() == KtJvmLibrary || r.Kind() == KtJvmBinary {
 		var target KotlinTarget
@@ -86,8 +84,6 @@ func (kt *kotlinLang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.
 			r.SetAttr("deps", deps)
 		}
 	}
-
-	BazelLog.Infof("Resolve(%s): //%s:%s DONE in %s", LanguageName, from.Pkg, r.Name(), time.Since(start).String())
 }
 
 func (kt *kotlinLang) resolveImports(
