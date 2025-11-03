@@ -9,19 +9,24 @@ package starzelle
 import (
 	"fmt"
 
+	common "github.com/aspect-build/aspect-gazelle/common"
 	"github.com/aspect-build/aspect-gazelle/language/orion/plugin"
 	starUtils "github.com/aspect-build/aspect-gazelle/language/orion/starlark/utils"
-	"github.com/bmatcuk/doublestar/v4"
 	"go.starlark.net/starlark"
 )
 
-func registerConfigureExtension(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+func deprecatedRegisterConfigureExtension(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	fmt.Printf("DEPRECATED: 'register_configure_extension' is deprecated, please use 'orion_extension' instead.\n")
+	return registerOrionPlugin(t, b, args, kwargs)
+}
+
+func registerOrionPlugin(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var pluginId starlark.String
 	var properties *starlark.Dict
 	var prepare, analyze, declare *starlark.Function
 
 	err := starlark.UnpackArgs(
-		"register_configure_extension",
+		"orion_extension",
 		args,
 		kwargs,
 		"id", &pluginId,
@@ -46,12 +51,18 @@ func registerConfigureExtension(t *starlark.Thread, b *starlark.Builtin, args st
 	return starlark.None, err
 }
 
-func registerRuleKind(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+func deprecatedRegisterRuleKind(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	fmt.Printf("DEPRECATED: 'register_rule_kind' is deprecated, please use 'gazelle_rule_kind' instead.\n")
+
+	return registerGazelleRuleKind(t, b, args, kwargs)
+}
+
+func registerGazelleRuleKind(t *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var kind starlark.String
 	var attributes *starlark.Dict
 
 	err := starlark.UnpackArgs(
-		"register_rule_kind",
+		"gazelle_rule_kind",
 		args,
 		kwargs,
 		"name", &kind,
@@ -65,33 +76,32 @@ func registerRuleKind(t *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	return starlark.None, err
 }
 
-func readQueryFilters(v starlark.Value) ([]string, error) {
+func readQueryFilters(v starlark.Value) ([]string, common.GlobExpr, error) {
 	if v == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	if filterString, ok := v.(starlark.String); ok {
-		s, err := readGlobPattern(filterString)
+		s, err := starUtils.ReadString(filterString)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
-		return []string{s}, nil
+		e, err := common.ParseGlobExpression(s)
+		if err != nil {
+			return nil, nil, err
+		}
+		return []string{s}, e, nil
 	}
 
-	return starUtils.ReadList(v, readGlobPattern)
-}
-
-func readGlobPattern(v starlark.Value) (string, error) {
-	s, isString := v.(starlark.String)
-	if !isString {
-		return "", fmt.Errorf("invalid glob pattern type: %T", v)
+	s, err := starUtils.ReadStringList(v)
+	if err != nil {
+		return nil, nil, err
 	}
-
-	if !doublestar.ValidatePattern(s.GoString()) {
-		return "", fmt.Errorf("invalid glob pattern: %q", v)
+	e, err := common.ParseGlobExpressions(s)
+	if err != nil {
+		return nil, nil, err
 	}
-
-	return s.GoString(), nil
+	return s, e, nil
 }
 
 func newAstQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -111,14 +121,15 @@ func newAstQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 
-	filters, err := readQueryFilters(filterValue)
+	filters, exp, err := readQueryFilters(filterValue)
 	if err != nil {
 		return nil, err
 	}
 
 	return plugin.QueryDefinition{
-		Filter:    filters,
-		QueryType: plugin.QueryTypeAst,
+		Filter:     filters,
+		FilterExpr: exp,
+		QueryType:  plugin.QueryTypeAst,
 		Params: plugin.AstQueryParams{
 			Grammar: grammarValue.GoString(),
 			Query:   query.GoString(),
@@ -141,15 +152,16 @@ func newRegexQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple,
 		return nil, err
 	}
 
-	filters, err := readQueryFilters(filterValue)
+	filters, exp, err := readQueryFilters(filterValue)
 	if err != nil {
 		return nil, err
 	}
 
 	return plugin.QueryDefinition{
-		Filter:    filters,
-		QueryType: plugin.QueryTypeRegex,
-		Params:    expression.GoString(),
+		Filter:     filters,
+		FilterExpr: exp,
+		QueryType:  plugin.QueryTypeRegex,
+		Params:     expression.GoString(),
 	}, nil
 }
 
@@ -166,14 +178,15 @@ func newRawQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 
-	filters, err := readQueryFilters(filterValue)
+	filters, exp, err := readQueryFilters(filterValue)
 	if err != nil {
 		return nil, err
 	}
 
 	return plugin.QueryDefinition{
-		Filter:    filters,
-		QueryType: plugin.QueryTypeRaw,
+		Filter:     filters,
+		FilterExpr: exp,
+		QueryType:  plugin.QueryTypeRaw,
 	}, nil
 }
 
@@ -192,15 +205,16 @@ func newJsonQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 
-	filters, err := readQueryFilters(filterValue)
+	filters, exp, err := readQueryFilters(filterValue)
 	if err != nil {
 		return nil, err
 	}
 
 	return plugin.QueryDefinition{
-		Filter:    filters,
-		QueryType: plugin.QueryTypeJson,
-		Params:    queryValue.GoString(),
+		Filter:     filters,
+		FilterExpr: exp,
+		QueryType:  plugin.QueryTypeJson,
+		Params:     queryValue.GoString(),
 	}, nil
 }
 
@@ -219,15 +233,16 @@ func newYamlQuery(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 
-	filters, err := readQueryFilters(filterValue)
+	filters, exp, err := readQueryFilters(filterValue)
 	if err != nil {
 		return nil, err
 	}
 
 	return plugin.QueryDefinition{
-		Filter:    filters,
-		QueryType: plugin.QueryTypeYaml,
-		Params:    queryValue.GoString(),
+		Filter:     filters,
+		FilterExpr: exp,
+		QueryType:  plugin.QueryTypeYaml,
+		Params:     queryValue.GoString(),
 	}, nil
 }
 
@@ -236,15 +251,19 @@ func newSourceExtensions(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	if err != nil {
 		return nil, err
 	}
-	return plugin.SourceExtensionsFilter{Extensions: exts}, nil
+	return plugin.NewSourceExtensionsFilter(exts).(starlark.Value), nil
 }
 
 func newSourceGlobs(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	globs, err := starUtils.ReadTuple(args, readGlobPattern)
+	globs, err := starUtils.ReadTuple(args, starUtils.ReadString)
 	if err != nil {
 		return nil, err
 	}
-	return plugin.SourceGlobFilter{Globs: globs}, nil
+	f, err := plugin.NewSourceGlobFilter(globs)
+	if err != nil {
+		return nil, err
+	}
+	return f.(starlark.Value), nil
 }
 
 func newSourceFiles(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -252,7 +271,7 @@ func newSourceFiles(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 	if err != nil {
 		return nil, err
 	}
-	return plugin.SourceFileFilter{Files: files}, nil
+	return plugin.NewSourceFileFilter(files).(starlark.Value), nil
 }
 
 func newPrepareResult(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -435,8 +454,10 @@ func newProperty(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 var aspectModule = starUtils.CreateModule(
 	"aspect",
 	map[string]starUtils.ModuleFunction{
-		"register_configure_extension": registerConfigureExtension,
-		"register_rule_kind":           registerRuleKind,
+		"register_configure_extension": deprecatedRegisterConfigureExtension,
+		"register_rule_kind":           deprecatedRegisterRuleKind,
+		"orion_extension":              registerOrionPlugin,
+		"gazelle_rule_kind":            registerGazelleRuleKind,
 		"AstQuery":                     newAstQuery,
 		"RegexQuery":                   newRegexQuery,
 		"RawQuery":                     newRawQuery,

@@ -2,15 +2,17 @@ package ibp
 
 import (
 	"fmt"
+	"iter"
 	"slices"
 
+	BazelLog "github.com/aspect-build/aspect-gazelle/common/logger"
 	"github.com/aspect-build/aspect-gazelle/runner/pkg/socket"
 )
 
 type IncrementalClient interface {
 	Connect() error
 	Disconnect() error
-	AwaitCycle() <-chan CycleSourcesMessage
+	AwaitCycle() iter.Seq2[*CycleSourcesMessage, error]
 }
 
 type incClient struct {
@@ -83,15 +85,13 @@ func (c *incClient) Disconnect() error {
 	return err
 }
 
-func (c *incClient) AwaitCycle() <-chan CycleSourcesMessage {
-	ch := make(chan CycleSourcesMessage)
-
-	go func() {
-		defer close(ch)
+func (c *incClient) AwaitCycle() iter.Seq2[*CycleSourcesMessage, error] {
+	return func(yield func(*CycleSourcesMessage, error) bool) {
 		for {
 			msg, err := c.socket.Recv()
 			if err != nil {
 				fmt.Printf("Error receiving message: %v\n", err)
+				yield(nil, err)
 				return
 			}
 
@@ -102,29 +102,38 @@ func (c *incClient) AwaitCycle() <-chan CycleSourcesMessage {
 					continue
 				}
 
-				c.socket.Send(CycleMessage{
+				err := c.socket.Send(CycleMessage{
 					Message: Message{
 						Kind: "CYCLE_STARTED",
 					},
 					CycleId: cycleEvent.CycleId,
 				})
+				if err != nil {
+					yield(nil, err)
+					return
+				}
 
-				ch <- cycleEvent
+				r := yield(&cycleEvent, nil)
 
-				c.socket.Send(CycleMessage{
+				err = c.socket.Send(CycleMessage{
 					Message: Message{
 						Kind: "CYCLE_COMPLETED",
 					},
 					CycleId: cycleEvent.CycleId,
 				})
+				if err != nil {
+					BazelLog.Warnf("Failed to send CYCLE_COMPLETED for cycle_id=%d: %v\n", cycleEvent.CycleId, err)
+				}
+
+				if !r {
+					return
+				}
 			} else {
 				fmt.Printf("Expected CYCLE, received: %v\n", msg)
 				continue
 			}
 		}
-	}()
-
-	return ch
+	}
 }
 
 func convertWireCycle(msg map[string]interface{}) (CycleSourcesMessage, error) {
@@ -141,17 +150,21 @@ func convertWireCycle(msg map[string]interface{}) (CycleSourcesMessage, error) {
 
 	sources := make(SourceInfoMap, len(msg["sources"].(map[string]interface{})))
 	for k, v := range msg["sources"].(map[string]interface{}) {
-		sources[k] = &SourceInfo{
-			IsSymlink: readOptionalBool(v.(map[string]interface{}), "is_symlink"),
-			IsSource:  readOptionalBool(v.(map[string]interface{}), "is_source"),
+		if v == nil {
+			sources[k] = nil
+		} else {
+			sources[k] = &SourceInfo{
+				IsSymlink: readOptionalBool(v.(map[string]interface{}), "is_symlink"),
+				IsSource:  readOptionalBool(v.(map[string]interface{}), "is_source"),
+			}
 		}
 	}
 
 	return CycleSourcesMessage{
-		Message: Message{
-			Kind: "CYCLE",
+		CycleMessage: CycleMessage{
+			Message: Message{Kind: "CYCLE"},
+			CycleId: cycleId,
 		},
-		CycleId: cycleId,
 		Sources: sources,
 	}, nil
 }

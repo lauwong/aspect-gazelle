@@ -5,20 +5,20 @@ go 1.24.5
 replace github.com/aspect-build/aspect-gazelle/common => ../../common
 
 require (
-	github.com/bazelbuild/bazel-gazelle v0.45.0 // NOTE: keep in sync with MODULE.bazel
+	github.com/bazelbuild/bazel-gazelle v0.46.0 // NOTE: keep in sync with MODULE.bazel
 	github.com/bazelbuild/buildtools v0.0.0-20250930140053-2eb4fccefb52
-	github.com/bmatcuk/doublestar/v4 v4.9.1
+	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
 	github.com/emirpasic/gods v1.18.1
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/itchyny/gojq v0.12.18-0.20251005142832-e46d0344f209
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	go.starlark.net v0.0.0-20250906160240-bf296ed553ea
+	go.starlark.net v0.0.0-20251029211736-7849196f18cf
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/sync v0.17.0
 )
 
 require (
-	github.com/aspect-build/aspect-gazelle/common v0.0.0-00010101000000-000000000000
+	github.com/aspect-build/aspect-gazelle/common v0.0.0-20251007231102-88e4ec95608b
 	github.com/mikefarah/yq/v4 v4.48.1
 )
 
