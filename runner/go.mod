@@ -13,7 +13,7 @@ go 1.24.5
 require (
 	github.com/EngFlow/gazelle_cc v0.1.0 // NOTE: keep in sync with MODULE.bazel
 	github.com/bazel-contrib/rules_python/gazelle v0.0.0-20251012075144-43a5acf8cedf
-	github.com/bazelbuild/bazel-gazelle v0.45.0 // NOTE: keep in sync with MODULE.bazel
+	github.com/bazelbuild/bazel-gazelle v0.46.0 // NOTE: keep in sync with MODULE.bazel
 	github.com/bazelbuild/buildtools v0.0.0-20250930140053-2eb4fccefb52
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/trace v1.38.0
@@ -40,10 +40,10 @@ require (
 )
 
 require (
-	github.com/aspect-build/aspect-gazelle/common v0.0.0-00010101000000-000000000000
-	github.com/aspect-build/aspect-gazelle/language/js v0.0.0-00010101000000-000000000000
-	github.com/aspect-build/aspect-gazelle/language/kotlin v0.0.0-00010101000000-000000000000
-	github.com/aspect-build/aspect-gazelle/language/orion v0.0.0-00010101000000-000000000000
+	github.com/aspect-build/aspect-gazelle/common v0.0.0-20251007231102-88e4ec95608b
+	github.com/aspect-build/aspect-gazelle/language/js v0.0.0-20251007231102-88e4ec95608b
+	github.com/aspect-build/aspect-gazelle/language/kotlin v0.0.0-20251007231102-88e4ec95608b
+	github.com/aspect-build/aspect-gazelle/language/orion v0.0.0-20251007231102-88e4ec95608b
 )
 
 require (
@@ -66,7 +66,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
-	go.starlark.net v0.0.0-20250906160240-bf296ed553ea // indirect
+	go.starlark.net v0.0.0-20251029211736-7849196f18cf // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/op/go-logging.v1 v1.0.0-20160211212156-b2cb9fa56473 // indirect

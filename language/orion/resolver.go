@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"path"
 	"strings"
-	"time"
 
 	common "github.com/aspect-build/aspect-gazelle/common"
 	BazelLog "github.com/aspect-build/aspect-gazelle/common/logger"
@@ -125,8 +124,7 @@ func (re *GazelleHost) Embeds(r *rule.Rule, f label.Label) []label.Label {
 
 // Resolve the dependencies of a rule and apply them to the necessary rule attributes.
 func (re *GazelleHost) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.RemoteCache, r *rule.Rule, importData interface{}, from label.Label) {
-	start := time.Now()
-	BazelLog.Infof("Resolve(%s): //%s:%s", GazelleLanguageName, from.Pkg, r.Name())
+	BazelLog.Debugf("Resolve(%s): //%s:%s", GazelleLanguageName, from.Pkg, r.Name())
 
 	pluginIdAttr := r.PrivateAttr(targetPluginKey)
 	if pluginIdAttr == nil {
@@ -176,8 +174,6 @@ func (re *GazelleHost) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo
 			}
 		}
 	}
-
-	BazelLog.Infof("Resolve(%s): //%s:%s DONE in %s", GazelleLanguageName, from.Pkg, r.Name(), time.Since(start).String())
 }
 
 func (re *GazelleHost) resolveImports(
